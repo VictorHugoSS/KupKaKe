@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - KupKaKez</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+    <script>
+        // Função para exibir a caixa de diálogo de erro
+        function showErrorDialog(message) {
+            var errorDialog = document.querySelector('.error-dialog');
+            var overlay = document.querySelector('.overlay');
+
+            // Exibir a caixa de diálogo e a sobreposição
+            errorDialog.style.display = 'block';
+            overlay.style.display = 'block';
+
+            // Preencher a mensagem de erro
+            var errorMessage = errorDialog.querySelector('.error-message');
+            errorMessage.textContent = message;
+
+            // Temporizador para fechar o diálogo e a mensagem após 2 segundos
+            setTimeout(function () {
+                closeErrorDialog();
+            }, 2000); // 2000 milissegundos = 2 segundos
+        }
+        // Função para fechar a caixa de diálogo de erro
+        function closeErrorDialog() {
+            var errorDialog = document.querySelector('.error-dialog');
+            var overlay = document.querySelector('.overlay');
+
+            // Ocultar a caixa de diálogo e a sobreposição
+            errorDialog.style.display = 'none';
+            overlay.style.display = 'none';
+        }
+    </script>
+</head>
+<body class="background-fade">
+    <div class="container">
+        <header>
+            <div class="logo">KupKaKez</div>
+            <h1>Login</h1>
+        </header>
+        <main>
+            <form method="POST" action="/login">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" class="form-field" required value="{{ request.form.email }}">
+
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" class="form-field" required>
+
+                <button type="submit" class="login-button">Entrar</button>
+            </form>
+            <p>Ainda não tem uma conta? <a href="/register" class="register-link">Registre-se</a></p>
+        </main>
+         {% with messages = get_flashed_messages() %}
+              {% if messages %}
+                <div class="overlay"></div>
+                <div class="error-dialog">
+                    <p class="error-message"></p>
+                </div>
+                <script>
+                    var errorMessage = "{{ messages[0] }}";
+                    showErrorDialog(errorMessage); // Exibe a mensagem em uma caixa de diálogo
+                </script>
+              {% endif %}
+        {% endwith %}
+    </div>
+</body>
+</html>

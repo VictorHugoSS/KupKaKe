@@ -1,0 +1,252 @@
+/* Estilos para o cabeçalho */
+.header {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+}
+
+.header h1 {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.header-icons {
+    padding-right: 20px;
+}
+
+.header-icons a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 20px;
+}
+
+/* Estilos CSS aqui... */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilos para a lista de cupcakes */
+.cupcake-list {
+    margin-top: 20px;
+    text-align: center;
+}
+/* Estilos para a lista de cupcakes */
+.cupcake-list {
+    margin-top: 20px;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap; /* Permite que os itens se ajustem à largura do contêiner */
+    justify-content: center; /* Alinha os itens ao centro horizontalmente */
+}
+
+.cupcake-list h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    width: 100%; /* Garante que o título ocupe toda a largura da lista */
+}
+
+/* Estilos para cada item de cupcake */
+.cupcake-item {
+    flex: 0 0 calc(33.33% - 20px); /* Ajusta a largura para ocupar 1/3 da largura da lista, considerando as margens */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.cupcake-item:hover {
+    transform: translateY(-5px);
+}
+
+/* Estilos para a imagem do cupcake */
+.cupcake-image img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ccc;
+    padding: 5px;
+    cursor: pointer;
+}
+
+/* Estilos para o nome do cupcake */
+.cupcake-name {
+    font-size: 20px;
+    margin: 10px 0;
+}
+
+/* Estilos para a descrição do cupcake */
+.cupcake-description {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+/* Estilos para o preço do cupcake */
+.cupcake-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilos para o seletor de quantidade personalizado */
+.quantity-selector {
+    margin-top: 10px;
+}
+
+.quantity-selector button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 3px;
+}
+
+.quantity-selector input {
+    font-size: 16px;
+    text-align: center;
+    width: 40px;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+/* Estilos para o botão "Adicionar ao carrinho" */
+.buy-button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Estilos para o seletor de quantidade personalizado */
+.quantity-selector {
+    margin-top: 10px;
+}
+
+.quantity-selector button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 3px;
+}
+
+.quantity-selector input {
+    font-size: 16px;
+    text-align: center;
+    width: 40px;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+/* Estilos para o botão "Adicionar ao carrinho" */
+.buy-button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.buy-button:hover {
+    background-color: #555;
+}
+
+/* Estilos para a imagem do cupcake */
+.cupcake-image img {
+    max-width: 100%; /* Define a largura máxima como 100% do contêiner pai */
+    height: 350px; /* Mantém a proporção da imagem */
+    border: 1px solid #ccc;
+    padding: 5px;
+    cursor: pointer;
+}
+
+
+/* Estilos para o nome do cupcake */
+.cupcake-name {
+    font-size: 20px;
+    margin: 10px 0;
+}
+
+/* Estilos para a descrição do cupcake */
+.cupcake-description {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+/* Estilos para o preço do cupcake */
+.cupcake-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Estilos para o seletor de quantidade personalizado */
+.quantity-selector {
+    margin-top: 10px;
+}
+
+.quantity-selector button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 3px;
+}
+
+.quantity-selector input {
+    font-size: 16px;
+    text-align: center;
+    width: 40px;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+/* Estilos para o botão "Adicionar ao carrinho" */
+.buy-button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.buy-button:hover {
+    background-color: #555;
+}
