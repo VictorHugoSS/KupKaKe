@@ -149,90 +149,49 @@ ul.flash-messages li {
     color: #333; /* Cor de texto mais escura */
 }
 
-/* Mensagens de erro */
-.error-message {
-    background: linear-gradient(to bottom, #ffe6e6, #ffcccc);
-    border: 1px solid #ffcccc;
-    border-radius: 5px;
-    margin: 10px 0;
-    padding: 10px 15px;
-    font-size: 12px;
-    box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.1);
-    color: #ff3333;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    width: 300px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: background 0.5s ease, border-color 0.5s ease, color 0.5s ease; /* Transição mais lenta */
-}
-
-
-/* Se desejar adicionar um ícone de erro ao lado da mensagem */
-.error-message::before {
-    content: "\2716";
-    margin-right: 10px;
-    font-size: 24px;
-    color: #ff3333;
-}
-
-/* Mensagens de aviso */
-.warning-message {
-    background-color: #fff3cd;
-    border: 1px solid #856404;
-    border-radius: 5px;
-    margin: 5px 0;
-    padding: 12px;
-    font-size: 14px; /* Reduzindo o tamanho da fonte */
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    color: #856404;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    opacity: 0.7; /* Adicionando opacidade */
-}
-
-/* Ícone de aviso (para mensagens de aviso) */
-.warning-icon {
-    margin-right: 10px;
-    font-size: 24px;
-}
-
-/* Estilos para a caixa de diálogo de erro */
-.error-dialog {
-    display: none;
+/* Estilo para a caixa de diálogo de mensagem */
+.message-dialog {
+    display: none; /* Inicialmente oculta a caixa de diálogo de mensagem */
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0); /* Cor de fundo com transparência (0.9) */
-    border: 1px solid rgba(0, 0, 0, 0);
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0);
     padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    z-index: 9999;
+    max-width: 80%;
     text-align: center;
     font-size: 16px;
-    z-index: 1000;
-    min-width: 200px;
-    max-width: 80%;
+    overflow: hidden; /* Evita que o conteúdo vaze da caixa de diálogo */
 }
 
-/* Estilos para o fundo de sobreposição */
-.overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Cor de fundo da sobreposição com transparência (0.5) */
-    z-index: 999;
+/* Estilo para a caixa de diálogo de sucesso */
+.message-dialog.success {
+    background-color: #4CAF50; /* Cor de fundo verde para mensagens de sucesso */
+    color: #fff; /* Cor do texto branco */
 }
 
-/* Ocultar o "x" (fechar) */
-.error-dialog .close-button {
-    display: none;
+/* Estilo para a caixa de diálogo de erro */
+.message-dialog.error {
+    background-color: #F44336; /* Cor de fundo vermelha para mensagens de erro */
+    color: #fff; /* Cor do texto branco */
 }
+
+/* Estilo para o botão de fechar a caixa de diálogo */
+.message-dialog-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+}
+
+/* Estilo para o conteúdo da mensagem */
+.message-message {
+    margin-top: 20px;
+    /* Adicione mais estilos conforme necessário para o conteúdo da mensagem */
+}
+
