@@ -5,34 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - KupKaKez</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+    <style>
+    </style>
     <script>
-        // Função para exibir a caixa de diálogo de erro
-        function showErrorDialog(message) {
-            var errorDialog = document.querySelector('.error-dialog');
+       // Função para exibir a caixa de diálogo de mensagem
+        function showMessageDialog(messageType, message) {
+            var messageDialog = document.querySelector('.message-dialog');
             var overlay = document.querySelector('.overlay');
 
+            // Definir a classe CSS com base no tipo de mensagem (success ou error)
+            messageDialog.className = 'message-dialog ' + messageType;
+
             // Exibir a caixa de diálogo e a sobreposição
-            errorDialog.style.display = 'block';
+            messageDialog.style.display = 'block';
             overlay.style.display = 'block';
 
-            // Preencher a mensagem de erro
-            var errorMessage = errorDialog.querySelector('.error-message');
-            errorMessage.textContent = message;
-
-            // Temporizador para fechar o diálogo e a mensagem após 2 segundos
-            setTimeout(function () {
-                closeErrorDialog();
-            }, 2000); // 2000 milissegundos = 2 segundos
+            // Preencher a mensagem
+            var messageContent = messageDialog.querySelector('.message-message');
+            messageContent.textContent = message;
         }
-        // Função para fechar a caixa de diálogo de erro
-        function closeErrorDialog() {
-            var errorDialog = document.querySelector('.error-dialog');
+
+        // Função para fechar a caixa de diálogo de mensagem
+        function closeMessageDialog() {
+            var messageDialog = document.querySelector('.message-dialog');
             var overlay = document.querySelector('.overlay');
 
             // Ocultar a caixa de diálogo e a sobreposição
-            errorDialog.style.display = 'none';
+            messageDialog.style.display = 'none';
             overlay.style.display = 'none';
         }
+
+        // Função para exibir mensagens de sucesso
+        function showSuccessMessage(message) {
+            showMessageDialog('success', message);
+            setTimeout(closeMessageDialog, 2000); // Fechar após 2 segundos
+        }
+
+        // Função para exibir mensagens de erro
+        function showErrorMessage(message) {
+            showMessageDialog('error', message);
+            setTimeout(closeMessageDialog, 2000); // Fechar após 2 segundos
+        }
+
+    // Verifique as mensagens flash na página carregada
+    window.onload = function() {
+        var successMessage = "{{ get_flashed_messages(category_filter='success')[0] }}";
+        var errorMessage = "{{ get_flashed_messages(category_filter='error')[0] }}";
+
+        if (successMessage) {
+            showSuccessMessage(successMessage);
+        } else if (errorMessage) {
+            showErrorMessage(errorMessage);
+        }
+    };
     </script>
 </head>
 <body class="background-fade">
@@ -53,18 +78,20 @@
             </form>
             <p>Ainda não tem uma conta? <a href="/register" class="register-link">Registre-se</a></p>
         </main>
-         {% with messages = get_flashed_messages() %}
-              {% if messages %}
+         {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
                 <div class="overlay"></div>
-                <div class="error-dialog">
-                    <p class="error-message"></p>
+                <div class="message-dialog {{ messages[0][1] }}">  <!-- Usa a categoria da mensagem para definir a classe CSS -->
+                    <span class="message-dialog-close" onclick="closeMessageDialog()">&times;</span>
+                    <p class="message-message">{{ messages[0][0] }}</p>
                 </div>
                 <script>
-                    var errorMessage = "{{ messages[0] }}";
-                    showErrorDialog(errorMessage); // Exibe a mensagem em uma caixa de diálogo
+                    var messageType = "{{ messages[0][1] }}";
+                    showMessageDialog(messageType, "{{ messages[0][0] }}"); // Exibe a mensagem em uma caixa de diálogo
                 </script>
-              {% endif %}
+            {% endif %}
         {% endwith %}
+
     </div>
 </body>
 </html>
