@@ -1,0 +1,39 @@
+
+/* Layout responsivo para telas menores */
+@media (max-width: 768px) {
+    .cupcake-list {
+        flex-direction: column;
+    }
+
+    .cupcake-item {
+        flex: 0 0 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 10px;
+    }
+
+    .cupcake-info {
+        text-align: center;
+    }
+
+    .cupcake-description {
+        font-size: 14px;
+    }
+
+    .buy-button {
+        font-size: 14px;
+    }
+
+    .quantity-selector {
+        margin-top: 5px;
+    }
+
+    .quantity-selector button {
+        font-size: 14px;
+        padding: 3px 6px;
+    }
+
+    .header-icons {
+        padding-right: 10px;
+    }
+}

@@ -117,7 +117,6 @@ def login():
 
         if usuario:
             session['usuario_id'] = usuario[0]
-            #flash('Login bem-sucedido', 'success')
 
             # Verifique se o usuário é um administrador
             print("Valor do campo de administrador:", usuario[5])
