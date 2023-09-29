@@ -31,7 +31,7 @@
 /* Estilos CSS aqui... */
 body {
     margin: 0;
-    padding: 0;
+    padding-top: 60px;
     font-family: Arial, sans-serif;
 }
 
@@ -40,24 +40,23 @@ body {
     margin-top: 20px;
     text-align: center;
 }
-/* Estilos para a lista de cupcakes */
-.cupcake-list {
-    margin-top: 20px;
-    text-align: center;
-    display: flex;
-    flex-wrap: wrap; /* Permite que os itens se ajustem à largura do contêiner */
-    justify-content: center; /* Alinha os itens ao centro horizontalmente */
-}
 
 .cupcake-list h1 {
     font-size: 24px;
     margin-bottom: 20px;
-    width: 100%; /* Garante que o título ocupe toda a largura da lista */
 }
 
 /* Estilos para cada item de cupcake */
+.cupcake-items {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around; /* Alinhamento central com espaço ao redor */
+    list-style: none;
+    padding: 0;
+}
+
 .cupcake-item {
-    flex: 0 0 calc(33.33% - 20px); /* Ajusta a largura para ocupar 1/3 da largura da lista, considerando as margens */
+    width: calc(33.33% - 20px); /* Ajusta a largura para ocupar 1/3 da largura da lista, considerando as margens */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -76,7 +75,7 @@ body {
 /* Estilos para a imagem do cupcake */
 .cupcake-image img {
     max-width: 100%;
-    height: auto;
+    height: 500px;
     border: 1px solid #ccc;
     padding: 5px;
     cursor: pointer;
@@ -139,75 +138,8 @@ body {
     transition: background-color 0.2s ease-in-out;
 }
 
-/* Estilos para o seletor de quantidade personalizado */
-.quantity-selector {
-    margin-top: 10px;
-}
-
-.quantity-selector button {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 5px 10px;
-    margin: 0 5px;
-    border-radius: 3px;
-}
-
-.quantity-selector input {
-    font-size: 16px;
-    text-align: center;
-    width: 40px;
-    border: 1px solid #ccc;
-    padding: 5px;
-}
-
-/* Estilos para o botão "Adicionar ao carrinho" */
-.buy-button {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 10px 20px;
-    margin-top: 10px;
-    border-radius: 3px;
-    transition: background-color 0.2s ease-in-out;
-}
-
 .buy-button:hover {
     background-color: #555;
-}
-
-/* Estilos para a imagem do cupcake */
-.cupcake-image img {
-    max-width: 100%; /* Define a largura máxima como 100% do contêiner pai */
-    height: 350px; /* Mantém a proporção da imagem */
-    border: 1px solid #ccc;
-    padding: 5px;
-    cursor: pointer;
-}
-
-
-/* Estilos para o nome do cupcake */
-.cupcake-name {
-    font-size: 20px;
-    margin: 10px 0;
-}
-
-/* Estilos para a descrição do cupcake */
-.cupcake-description {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #666;
-}
-
-/* Estilos para o preço do cupcake */
-.cupcake-price {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
 }
 
 /* Estilos para o seletor de quantidade personalizado */
@@ -234,19 +166,34 @@ body {
     padding: 5px;
 }
 
-/* Estilos para o botão "Adicionar ao carrinho" */
-.buy-button {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 10px 20px;
-    margin-top: 10px;
-    border-radius: 3px;
-    transition: background-color 0.2s ease-in-out;
+/* Estilos para o modal */
+.modal {
+    display: none; /* Oculta o modal inicialmente */
+    position: fixed;
+    top: 50%; /* Posiciona o topo do modal no centro vertical */
+    left: 50%; /* Posiciona o lado esquerdo do modal no centro horizontal */
+    transform: translate(-50%, -50%); /* Centraliza o modal */
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Cor de fundo escura */
+    z-index: 2000; /* Defina um valor de z-index maior para o modal */
 }
 
-.buy-button:hover {
-    background-color: #555;
+.modal-conteudo {
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+    position: relative; /* Para posicionar o botão de fechamento */
+    margin: 0 auto;
+    margin-top: 50px;
+}
+
+.fechar-modal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 36px;
+    cursor: pointer;
+    color: #fff;
+    z-index: 3000; /* Defina um valor de z-index ainda maior para o botão de fechamento */
 }
