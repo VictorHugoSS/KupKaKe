@@ -1,0 +1,197 @@
+/* Estilos gerais */
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    transition: background-image 4s ease-in-out, opacity 2s ease-in-out;
+}
+
+/* Estilos do contêiner principal */
+.container {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Estilos do logotipo */
+.logo {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #e74c3c;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+    padding: 0;
+}
+
+/* Estilos do título */
+h1 {
+    font-size: 28px;
+    color: #333;
+}
+
+/* Estilos das etiquetas */
+label {
+    font-size: 18px;
+    font-weight: bold;
+    display: block;
+    margin-top: 15px;
+}
+
+/* Estilos dos campos de entrada */
+input[type="email"],
+input[type="password"] {
+    width: 90%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Estilos para o botão de login */
+.login-button {
+    background-color: #333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.login-button:hover {
+    background-color: #555;
+}
+
+/* Estilos para o link de registro */
+.register-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+.register-link:hover {
+    text-decoration: underline;
+}
+
+/* Estilos das mensagens de erro */
+ul.flash-messages {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+ul.flash-messages li {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.animation-paused .background-fade {
+    animation-play-state: paused;
+}
+/* Estilos do fundo */
+.background-fade {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    animation: changeImage 8s linear infinite;
+    z-index: -1; /* Coloca o fundo atrás de todos os outros elementos */
+}
+
+/* Animação das imagens de fundo */
+@keyframes changeImage {
+    0%, 100% { opacity: 1; background-image: url('imagens/cup3.jpg'); }
+    25% { opacity: 1; background-image: url('imagens/cup1.jpg'); }
+    50% { opacity: 1; background-image: url('imagens/cup2.jpg'); }
+    75% { opacity: 1; background-image: url('imagens/cup3.jpg'); }
+}
+
+
+.flash-error {
+    color: #ff0000; /* Cor do texto vermelho para mensagens de erro */
+    font-weight: bold;
+    background-color: #ffeeee; /* Cor de fundo para mensagens de erro */
+    border: 1px solid #ff0000; /* Borda vermelha para mensagens de erro */
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+}
+
+.flash-message {
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 5px 0;
+    padding: 12px; /* Aumentado o espaçamento interno */
+    font-size: 16px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    color: #333; /* Cor de texto mais escura */
+}
+
+/* Estilo para a caixa de diálogo de mensagem */
+.message-dialog {
+    display: none; /* Inicialmente oculta a caixa de diálogo de mensagem */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    z-index: 9999;
+    max-width: 80%;
+    text-align: center;
+    font-size: 16px;
+    overflow: hidden; /* Evita que o conteúdo vaze da caixa de diálogo */
+}
+
+/* Estilo para a caixa de diálogo de sucesso */
+.message-dialog.success {
+    background-color: #4CAF50; /* Cor de fundo verde para mensagens de sucesso */
+    color: #fff; /* Cor do texto branco */
+}
+
+/* Estilo para a caixa de diálogo de erro */
+.message-dialog.error {
+    background-color: #F44336; /* Cor de fundo vermelha para mensagens de erro */
+    color: #fff; /* Cor do texto branco */
+}
+
+/* Estilo para o botão de fechar a caixa de diálogo */
+.message-dialog-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #333;
+}
+
+/* Estilo para o conteúdo da mensagem */
+.message-message {
+    margin-top: 20px;
+    /* Adicione mais estilos conforme necessário para o conteúdo da mensagem */
+}
+

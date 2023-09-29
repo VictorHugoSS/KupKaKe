@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frente de Loja</title>
+    <!-- Link para o arquivo CSS externo -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='front_store.css') }}">
+</head>
+<body>
+    <div class="cupcake-list">
+        <h1>Cupcakes Disponíveis</h1>
+        <ul>
+            {% for cupcake in cupcakes %}
+                <li class="cupcake-item">
+                    <img src="{{ cupcake['imagem_url'] }}" alt="{{ cupcake['nome'] }}">
+                    <h2>{{ cupcake['nome'] }}</h2>
+                    <p>{{ cupcake['descricao'] }}</p>
+                    <p>Preço: R$ {{ cupcake['preco'] }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

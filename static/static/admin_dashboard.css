@@ -1,0 +1,86 @@
+/* Reset de estilos padrão */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+}
+
+.admin-dashboard {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos do cabeçalho */
+.admin-header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+}
+
+.admin-header h1 {
+    font-size: 28px;
+}
+
+.logout-button {
+    color: #fff;
+    text-decoration: none;
+    margin-right: 20px;
+    font-size: 18px;
+}
+
+/* Estilos do menu de administração */
+.admin-menu {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+}
+
+.admin-menu h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.admin-menu ul {
+    list-style: none;
+    padding: 0;
+}
+
+.admin-menu ul li {
+    margin-bottom: 10px;
+}
+
+.admin-menu ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 20px;
+    transition: color 0.3s;
+}
+
+.admin-menu ul li a:hover {
+    color: #ff6b00; /* Cor de destaque ao passar o mouse */
+}
+
+/* Estilos do conteúdo do painel de administração */
+.admin-content {
+    padding: 20px;
+}
+
+.admin-content h3 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.admin-content p {
+    font-size: 18px;
+    color: #777;
+}
