@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listagem de Pedidos Realizados</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='listar_pedidos.css') }}">
+    <link rel="stylesheet" href="../static/avaliar_pedidos.css">
+    <link rel="stylesheet" href="../static/mediaSmartphone.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Adicione um botão de voltar com um ícone Font Awesome -->
+        <a href="/dashboard" class="voltar-button">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+        <h1>Listagem de Pedidos Realizados</h1>
+        <ul>
+            {% for pedido in pedidos %}
+            <div class="pedido-container">
+                <img src="{{ pedido['cupcake_imagem_url'] }}" alt="Imagem do Cupcake" class="cupcake-img" onclick="mostrarDetalhesPedido('{{ pedido['pedido_id'] }}')">
+                <p>ID do Pedido: {{ pedido['pedido_id'] }}</p>
+                <p>ID do Usuário: {{ pedido['usuario_id'] }}</p>
+                <p>Data do Pedido: {{ pedido['data_pedido'] }}</p>
+                <p>Status: {{ pedido['status'] }}</p>
+                <ul id="itens-{{ pedido['pedido_id'] }}" class="itens-pedido">
+                    <li>Nome: {{ pedido['cupcake_nome'] }}</li>
+                    <li>Descrição: {{ pedido['cupcake_descricao'] }}</li>
+                    <li>Quantidade: {{ pedido['quantidade'] }}</li>
+                    <li>Preço Unitário: {{ pedido['cupcake_preco'] }}</li>
+                </ul>
+                <div class="rating">
+                    <input type="radio" id="star1" name="rating" value="1">
+                    <label for="star1"></label>
+                    <input type="radio" id="star2" name="rating" value="2">
+                    <label for="star2"></label>
+                    <input type="radio" id="star3" name="rating" value="3">
+                    <label for="star3"></label>
+                    <input type="radio" id="star4" name="rating" value="4">
+                    <label for="star4"></label>
+                    <input type="radio" id="star5" name="rating" value="5">
+                    <label for="star5"></label>
+                </div>
+            </div>
+            {% endfor %}
+        </ul>
+    </div>
+    <!-- Estrutura da tela modal -->
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="fecharModal()">&times;</span>
+        <!-- Conteúdo da tela modal (detalhes e avaliação dos itens) -->
+        <h2 class="modal-title">Detalhes e Avaliação do Pedido</h2>
+        <div id="modal-content-placeholder" class="modal-details">
+          <!-- O conteúdo será preenchido aqui com JavaScript -->
+        </div>
+      </div>
+    </div>
+    <script>
+        // Adicione um evento de clique aos botões para mostrar/ocultar os itens do pedido
+        const mostrarItensButtons = document.querySelectorAll('.mostrar-itens');
+        mostrarItensButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                // Encontre o ID do pedido associado ao botão clicado
+                const pedidoId = button.getAttribute('data-pedido-id');
+
+                // Encontre os itens do pedido correspondentes e exiba/oculte-os
+                const itensPedido = document.getElementById(`itens-${pedidoId}`);
+                if (itensPedido.style.display === 'none' || itensPedido.style.display === '') {
+                    itensPedido.style.display = 'block';
+                    button.textContent = 'Ocultar Itens';
+                } else {
+                    itensPedido.style.display = 'none';
+                    button.textContent = 'Mostrar Itens';
+                }
+            });
+        });
+
+        // Função para abrir a tela modal
+        function mostrarDetalhesPedido(pedidoId) {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'block';
+
+            // Fazer uma requisição AJAX para obter os detalhes do pedido
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    // Preencher o conteúdo da tela modal com os detalhes do pedido obtidos da resposta AJAX
+                    const modalContentPlaceholder = document.getElementById('modal-content-placeholder');
+                    modalContentPlaceholder.innerHTML = xhr.responseText;
+                }
+            };
+            xhr.open('GET', `/obter_detalhes_pedido?pedido_id=${pedidoId}`, true);
+            xhr.send();
+        }
+
+        // Função para fechar a tela modal
+        function fecharModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+        }
+        // ... Seu código existente ...
+
+        // Função para fechar a tela modal
+        function fecharModal() {
+            const modal = document.getElementById('myModal');
+            modal.style.display = 'none';
+        }
+
+        // Adicione um ouvinte de evento de teclado para detectar quando a tecla "Esc" é pressionada
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                fecharModal(); // Feche a tela modal quando a tecla "Esc" for pressionada
+            }
+        });
+    </script>
+</body>
+</html>

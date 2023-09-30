@@ -36,6 +36,9 @@ def create_db():
             senha TEXT NOT NULL,
             is_admin BOOLEAN DEFAULT 0
         )
+    ''')
+
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS cupcakes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
@@ -45,17 +48,46 @@ def create_db():
             imagem_url TEXT,
             data_adicao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
-        CREATE TABLE IF NOT EXIST compras(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            id_usuario INTEGER NOT NULL,
-            id_cupcake INTEGER NOT NULL,
-            quantidade INTEGER NOT NULL,
-            data_compra TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
-            FOREIGN KEY (id_cupcake) REFERENCES cupcakes(id)
-        );
-
     ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS pedidos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER NOT NULL,
+            data_pedido TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            status TEXT NOT NULL
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS itens_pedido (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            pedido_id INTEGER NOT NULL,
+            cupcake_id INTEGER NOT NULL,
+            quantidade INTEGER NOT NULL,
+            FOREIGN KEY (pedido_id) REFERENCES pedidos (id),
+            FOREIGN KEY (cupcake_id) REFERENCES cupcakes (id)
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS avaliacoes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cupcake_id INTEGER NOT NULL,
+            pedido_id INTEGER NOT NULL,
+            classificacao INTEGER NOT NULL,
+            comentario TEXT,
+            FOREIGN KEY (cupcake_id) REFERENCES cupcakes (id),
+            FOREIGN KEY (pedido_id) REFERENCES pedidos (id)
+        )
+    ''')
+
+    conn.commit()
+    conn.close()
+
+    flash('Banco de dados criado com sucesso', 'success')
+    return redirect(url_for('login'))
+
 
     flash('Banco de dados criado com sucesso', 'success')
     return redirect(url_for('login'))
@@ -448,28 +480,342 @@ def admin_add_product():
     print("Entrei biruta")
     return render_template('admin_add_product.html')
 
-# Rota para gerenciar o estoque de produtos
-@app.route('/manage_stock')
-def manage_stock():
-    if 'usuario_id' in session:
-        if session['tipo_usuario'] == 'administrador':
-            conn = connect_db()
-            cursor = conn.cursor()
+@app.route('/finalizar_pedido', methods=['POST'])
+def finalizar_pedido():
+    if 'carrinho' in session:
+        carrinho = session['carrinho']
+        usuario_id = session.get('usuario_id')
 
-            cursor.execute('SELECT * FROM produtos')
-            produtos = cursor.fetchall()
+        conn = connect_db()
+        cursor = conn.cursor()
 
-            conn.close()
+        # Crie um registro de pedido no banco de dados
+        cursor.execute('INSERT INTO pedidos (usuario_id, status) VALUES (?, ?)', (usuario_id, 'Concluído'))
+        pedido_id = cursor.lastrowid
 
-            return render_template('manage_stock.html', produtos=produtos)
+        for item in carrinho:
+            cupcake_id = item['cupcake']['id']
+            quantidade = item['quantidade']
 
-    flash('Faça o login como administrador para gerenciar o estoque', 'error')
-    return redirect(url_for('login'))
+            # Crie um registro de item de pedido no banco de dados
+            cursor.execute('INSERT INTO itens_pedido (pedido_id, cupcake_id, quantidade) VALUES (?, ?, ?)',
+                           (pedido_id, cupcake_id, quantidade))
 
-# Rota para o chat de suporte
-@app.route('/support_chat')
-def support_chat():
-    return render_template('support_chat.html')
+        conn.commit()
+        conn.close()
+
+        session.pop('carrinho', None)  # Limpe o carrinho após a conclusão do pedido
+        flash('Pedido realizado com sucesso', 'success')
+
+    return redirect(url_for('carrinho'))
+
+
+@app.route('/avaliar_pedido/<int:pedido_id>', methods=['GET', 'POST'])
+def avaliar_pedido(pedido_id):
+    # Verifique se o usuário está autenticado
+    if 'usuario_id' not in session:
+        flash('Faça o login para avaliar o pedido.', 'error')
+        return redirect(url_for('login'))
+
+    # Recupere informações do pedido
+
+def obter_item_pedido_por_ids(pedido_id):
+    item_pedido = None
+
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        # Consulta SQL para buscar o item do pedido com base nos IDs do pedido e do cupcake
+        cursor.execute('SELECT * FROM itens_pedido WHERE pedido_id = ? AND cupcake_id = ?', (pedido_id, ))
+        item_pedido_data = cursor.fetchone()
+
+        if item_pedido_data:
+            item_pedido = {
+                'id': item_pedido_data[0],
+                'pedido_id': item_pedido_data[1],
+                'cupcake_id': item_pedido_data[2],
+                'quantidade': item_pedido_data[3],
+                # Adicione outros campos do item do pedido conforme necessário
+            }
+            print(item_pedido)
+
+        conn.close()
+    except sqlite3.Error as e:
+        print('Erro ao buscar item do pedido do banco de dados:', str(e))
+
+    return item_pedido
+
+def salvar_avaliacao_item_pedido(pedido_id, cupcake_id, classificacao, comentario):
+    try:
+        conn = connect_db()
+        cursor = conn.cursor()
+
+        # Verifique se já existe uma avaliação para o item do pedido
+        cursor.execute('SELECT * FROM avaliacoes WHERE pedido_id = ? AND cupcake_id = ?', (pedido_id, cupcake_id))
+        avaliacao_existente = cursor.fetchone()
+
+        if avaliacao_existente:
+            # Se a avaliação já existe, atualize-a
+            cursor.execute('UPDATE avaliacoes SET classificacao = ?, comentario = ? WHERE pedido_id = ? AND cupcake_id = ?',
+                           (classificacao, comentario, pedido_id, cupcake_id))
+        else:
+            # Se a avaliação não existe, insira uma nova
+            cursor.execute('INSERT INTO avaliacoes (pedido_id, cupcake_id, classificacao, comentario) VALUES (?, ?, ?, ?)',
+                           (pedido_id, cupcake_id, classificacao, comentario))
+
+        conn.commit()
+        conn.close()
+    except sqlite3.Error as e:
+        print('Erro ao salvar avaliação do item do pedido no banco de dados:', str(e))
+
+
+def obter_pedidos_realizados():
+    try:
+        conn = sqlite3.connect('app.db')  # Substitua 'app.db' pelo nome do seu banco de dados
+        cursor = conn.cursor()
+
+        # Consulta SQL para obter os pedidos já realizados e os cupcakes relacionados
+        cursor.execute('''
+            SELECT 
+                pedidos.id AS pedido_id, 
+                pedidos.usuario_id, 
+                pedidos.data_pedido, 
+                pedidos.status, 
+                itens_pedido.id AS item_pedido_id,
+                cupcakes.id AS cupcake_id,
+                cupcakes.nome AS cupcake_nome,
+                cupcakes.descricao AS cupcake_descricao,
+                cupcakes.preco AS cupcake_preco,
+                cupcakes.imagem_url AS cupcake_imagem_url,
+                itens_pedido.quantidade
+            FROM pedidos
+            JOIN itens_pedido ON pedidos.id = itens_pedido.pedido_id
+            JOIN cupcakes ON itens_pedido.cupcake_id = cupcakes.id
+            WHERE pedidos.status = 'Concluído'
+        ''')
+        pedidos_data = cursor.fetchall()
+
+        pedidos = []
+
+        for pedido_data in pedidos_data:
+            pedido_id = pedido_data[0]
+
+            # Verifique se o pedido já está na lista de pedidos
+            pedido_existente = next((pedido for pedido in pedidos if pedido['id'] == pedido_id), None)
+
+            if not pedido_existente:
+                # Se o pedido não existe na lista, crie um novo registro
+                pedido = {
+                    'id': pedido_id,
+                    'usuario_id': pedido_data[1],
+                    'data_pedido': pedido_data[2],
+                    'status': pedido_data[3],
+                    'itens': []  # Uma lista para armazenar os itens relacionados a este pedido
+                }
+                pedidos.append(pedido)
+            else:
+                pedido = pedido_existente
+
+            # Crie um registro para o item de pedido e cupcakes relacionados
+            item_pedido = {
+                'id': pedido_data[4],  # ID do item de pedido
+                'cupcake': {
+                    'id': pedido_data[5],
+                    'nome': pedido_data[6],
+                    'descricao': pedido_data[7],
+                    'preco': pedido_data[8],
+                    'imagem_url': pedido_data[9]
+                },
+                'quantidade': pedido_data[10]
+            }
+
+            # Adicione o item de pedido à lista de itens do pedido
+            pedido['itens'].append(item_pedido)
+
+        conn.close()
+        return pedidos
+    except sqlite3.Error as e:
+        print('Erro ao buscar pedidos realizados:', str(e))
+
+    return []
+
+@app.route('/obter_detalhes_pedido', methods=['GET'])
+def obter_detalhes_pedido():
+    pedido_id = request.args.get('pedido_id')
+    # Suponha que você tenha uma função que retorne os detalhes do pedido com base no pedido_id
+    pedido_detalhes = buscar_detalhes_pedido(pedido_id)
+
+    if pedido_detalhes:
+        # Renderize os detalhes do pedido em HTML
+        html_detalhes_pedido = renderizar_detalhes_pedido(pedido_detalhes)
+        return html_detalhes_pedido
+
+    # Se o pedido não for encontrado, você pode retornar uma mensagem de erro
+    return 'Pedido não encontrado', 404
+
+def renderizar_detalhes_pedido(pedido_detalhes):
+    # Aqui você pode formatar os detalhes do pedido em HTML
+    html = '<h2>Detalhes do Pedido</h2>'
+    html += f'<p>ID do Pedido: {pedido_detalhes["id"]}</p>'
+    html += f'<p>Cliente: {pedido_detalhes["cliente"]}</p>'
+    html += f'<p>Endereço: {pedido_detalhes["endereco"]}</p>'
+
+    html += '<h3>Itens do Pedido</h3>'
+    html += '<ul>'
+    for item in pedido_detalhes['itens']:
+        html += f'<li>Nome: {item["nome"]},Descricao: {item["descricao"]}, Preço Unitário: R$ {item["preco_unitario"]}, Quantidade: {item["quantidade"]}</li>'
+    html += '</ul>'
+
+    # Você pode adicionar mais informações conforme necessário
+
+    return html
+
+#Função para buscar detalhes do pedido (exemplo)
+def buscar_detalhes_pedido(pedido_id):
+    try:
+        conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
+        cursor = conn.cursor()
+
+        # Consulta SQL para buscar detalhes do pedido com base no pedido_id
+        cursor.execute('''
+            SELECT 
+                pedidos.id AS pedido_id, 
+                pedidos.usuario_id, 
+                pedidos.data_pedido, 
+                pedidos.status, 
+                itens_pedido.id AS item_pedido_id,
+                cupcakes.id AS cupcake_id,
+                cupcakes.nome AS cupcake_nome,
+                cupcakes.descricao AS cupcake_descricao,
+                cupcakes.preco AS cupcake_preco,
+                cupcakes.imagem_url AS cupcake_imagem_url,
+                itens_pedido.quantidade
+            FROM pedidos
+            JOIN itens_pedido ON pedidos.id = itens_pedido.pedido_id
+            JOIN cupcakes ON itens_pedido.cupcake_id = cupcakes.id
+            WHERE pedidos.id = ?
+        ''', (pedido_id,))
+
+        detalhes_pedido = {
+            'itens': []
+        }
+
+        for row in cursor.fetchall():
+            detalhes_pedido['id'] = row[0]
+            detalhes_pedido['cliente'] = row[4]
+            detalhes_pedido['endereco'] = row[5]
+            detalhes_item = {
+                'nome': row[6],
+                'quantidade': row[10],
+                'preco_unitario': row[8],
+                'descricao': row[7]
+            }
+            detalhes_pedido['itens'].append(detalhes_item)
+
+        conn.close()
+        return detalhes_pedido
+
+    except sqlite3.Error as e:
+        print('Erro ao buscar detalhes do pedido:', str(e))
+        return None
+
+def obter_pedidos_por_usuario(usuario_id):
+    try:
+        conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
+        cursor = conn.cursor()
+
+        # Consulta SQL para buscar detalhes dos pedidos do usuário com base no usuario_id
+        cursor.execute('''
+            SELECT 
+                pedidos.id AS pedido_id, 
+                pedidos.usuario_id, 
+                pedidos.data_pedido, 
+                pedidos.status, 
+                itens_pedido.id AS item_pedido_id,
+                cupcakes.id AS cupcake_id,
+                cupcakes.nome AS cupcake_nome,
+                cupcakes.descricao AS cupcake_descricao,
+                cupcakes.preco AS cupcake_preco,
+                cupcakes.imagem_url AS cupcake_imagem_url,
+                itens_pedido.quantidade
+            FROM pedidos
+            JOIN itens_pedido ON pedidos.id = itens_pedido.pedido_id
+            JOIN cupcakes ON itens_pedido.cupcake_id = cupcakes.id
+            WHERE pedidos.usuario_id = ?
+        ''', (usuario_id,))
+
+        detalhes_pedidos = []
+
+        for row in cursor.fetchall():
+            detalhes_pedido = {
+                'pedido_id': row[0],
+                'usuario_id': row[1],
+                'data_pedido': row[2],
+                'status': row[3],
+                'item_pedido_id': row[4],
+                'cupcake_id': row[5],
+                'cupcake_nome': row[6],
+                'cupcake_descricao': row[7],
+                'cupcake_preco': row[8],
+                'cupcake_imagem_url': row[9],
+                'quantidade': row[10]
+            }
+            detalhes_pedidos.append(detalhes_pedido)
+
+        conn.close()
+        return detalhes_pedidos
+
+    except sqlite3.Error as e:
+        print('Erro ao buscar detalhes dos pedidos do usuário:', str(e))
+        return None
+
+
+@app.route('/listar_pedidos', methods=['GET'])
+def listar_pedidos():
+    # Recupere o 'usuario_id' do usuário logado da sessão (você pode ter um sistema de autenticação para definir isso)
+    usuario_id = session.get('usuario_id')
+
+    if usuario_id is None:
+        # O usuário não está autenticado, você pode redirecioná-lo para uma página de login
+        return redirect('/login')  # Substitua '/login' pela rota real da página de login
+
+    # Aqui, você deve recuperar os pedidos do banco de dados que estão vinculados ao 'usuario_id'
+    # Suponha que você tenha uma função chamada 'obter_pedidos_por_usuario' que retorna uma lista de pedidos vinculados ao usuário
+
+    pedidos = obter_pedidos_por_usuario(usuario_id)  # Substitua esta linha pela chamada à função apropriada
+
+    return render_template('avaliar_item_pedido.html', pedidos=pedidos)
+
+@app.route('/avaliar_item_pedido/<int:pedido_id>/<int:cupcake_id>', methods=['GET', 'POST'])
+def avaliar_item_pedido(pedido_id, cupcake_id):
+    # Verifique se o usuário está autenticado
+    if 'usuario_id' not in session:
+        flash('Faça o login para avaliar itens do pedido.', 'error')
+        return redirect(url_for('login'))
+
+    # Recupere informações do item do pedido
+    item_pedido = obter_item_pedido_por_ids(pedido_id, cupcake_id)
+
+    # Verifique se o item do pedido existe e pertence ao usuário logado
+    if not item_pedido or item_pedido['usuario_id'] != session['usuario_id']:
+        flash('Item do pedido não encontrado ou não autorizado para avaliação.', 'error')
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        classificacao = int(request.form.get('classificacao'))
+        comentario = request.form.get('comentario')
+
+        # Valide os dados do formulário aqui
+
+        # Salve a avaliação do item do pedido no banco de dados (supondo que você tenha uma função para fazer isso)
+        salvar_avaliacao_item_pedido(pedido_id, cupcake_id, classificacao, comentario)
+
+        flash('Item do pedido avaliado com sucesso.', 'success')
+        return redirect(url_for('dashboard'))
+
+    return render_template('avaliar_item_pedido.html', item_pedido=item_pedido)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

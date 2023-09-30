@@ -1,0 +1,213 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    margin: 20px;
+    padding: 20px;
+}
+
+h1 {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    margin: 0;
+}
+
+table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo das linhas de pedido ao passar o mouse */
+tr.linha-pedido:hover {
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+/* Estilo das células da tabela */
+th, td {
+    border: 1px solid #ccc;
+    padding: 12px;
+    text-align: left;
+    border-radius: 4px;
+}
+
+/* Adicione uma sombra suave às células da tabela */
+th, td {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Outros estilos existentes ... */
+
+/* Estilo das células de cabeçalho */
+th {
+    background-color: #333;
+    color: #fff;
+    padding: 12px;
+    text-align: left;
+}
+
+/* Estilo para a seção de detalhes do item de pedido */
+.item-pedido-detalhes {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+/* Estilo das linhas de pedido ao passar o mouse */
+.linha-pedido:hover {
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+/* Estilo dos itens de pedido */
+.itens-pedido {
+    display: none;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 5px;
+}
+
+/* Estilo para imagens de cupcakes */
+.cupcake-img {
+    max-width: 100px;
+    max-height: 100px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Estilo para a seção de detalhes do item de pedido */
+.item-pedido-detalhes {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 10px;
+}
+/* Estilo para ocultar os itens do pedido por padrão */
+.itens-pedido {
+    display: none;
+}
+ .pedido-container {
+     border: 1px solid #ccc;
+     margin: 10px;
+     padding: 10px;
+     background-color: #f9f9f9;
+     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+     text-align: center;
+ }
+
+/* Estilo para a tela modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Estilo do conteúdo da tela modal */
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Outros estilos existentes ... */
+
+
+.close {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #888;
+}
+
+.cupcake-modal-img {
+    max-width: 100%;
+    height: auto;
+}
+
+
+.modal-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.modal-details {
+    margin-top: 20px;
+}
+
+/* Estilo do botão de fechar (x) */
+.close {
+    position: absolute; /* Altere para 'absolute' */
+    right: 10px; /* Alinhe à direita */
+    top: 10px; /* Alinhe ao topo */
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #888;
+}
+
+/* Estilos do botão "Voltar" */
+.voltar-button {
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+    margin-right: 20px;
+}
+/* Estilo para imagens de cupcakes */
+.cupcake-img {
+    max-width: 100px;
+    max-height: 100px;
+    display: block;
+    margin: 0 auto;
+    cursor: pointer; /* Adicione esta linha para definir o cursor como uma mão */
+}
+
+/* Estilos para a classificação por estrelas */
+.rating {
+  display: inline-block;
+  unicode-bidi: bidi-override;
+  direction: rtl;
+}
+
+.rating input {
+  display: none;
+}
+
+.rating label {
+  display: inline-block;
+  padding: 5px;
+  font-size: 24px;
+  color: #ccc; /* Cor das estrelas vazias */
+  cursor: pointer;
+}
+
+.rating label:before {
+  content: "\2605"; /* Código Unicode para uma estrela preenchida */
+}
+
+.rating input:checked ~ label {
+  color: #FFD700; /* Cor das estrelas preenchidas */
+}

@@ -98,11 +98,13 @@
                 <p class="empty-cart">O carrinho está vazio.</p>
             {% endif %}
         </ul>
-        <div class="checkout-button-container">
-            <a href="/checkout" class="checkout-button">
-                <i class="fas fa-shopping-cart"></i> Finalizar Compra
-            </a>
-        </div>
+        <form action="/finalizar_pedido" method="post">
+            <div class="checkout-button-container">
+                <button type="submit" class="remover-item-do-carrinho">
+                    <i class="fas fa-shopping-cart"></i> Finalizar Compra
+                </button>
+            </div>
+        </form>
    </div>
 </body>
 </html>
