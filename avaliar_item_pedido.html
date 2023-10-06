@@ -21,7 +21,8 @@
         <ul>
             {% for pedido in pedidos %}
             <div class="pedido-container" data-pedido-id="{{ pedido['pedido_id'] }}" >
-                <img src="{{ pedido['cupcake_imagem_url'] }}" alt="Imagem do Cupcake" class="cupcake-img" onclick="mostrarDetalhesPedido('{{ pedido['pedido_id'] }}')">
+            <p>URL da Imagem: {{ pedido['cupcake_imagem_url'] }}</p>
+                <img src="https://i.pinimg.com/originals/b5/cf/f8/b5cff8107bb9d58112e5c9c3f4112fa4.jpg" alt="Imagem do Cupcake" class="cupcake-img" onclick="mostrarDetalhesPedido('{{ pedido['pedido_id'] }}')">
                 <p>ID do Pedido: {{ pedido['pedido_id'] }}</p>
                 <p>ID do Usuário: {{ pedido['usuario_id'] }}</p>
                 <p>Data do Pedido: {{ pedido['data_pedido'] }}</p>
@@ -62,17 +63,13 @@
 
     <!-- Estrutura da tela modal -->
     <div id="myModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="fecharModal()">&times;</span>
-        <!-- Conteúdo da tela modal (detalhes e avaliação dos itens) -->
-        <h2 class="modal-title">Detalhes do Pedido</h2>
-        <div id="modal-content-placeholder" class="modal-details">
-          <!-- O conteúdo será preenchido aqui com JavaScript -->
+        <div class="modal-content">
+            <span class="close" onclick="fecharModal()">&times;</span>
+            <h2>Detalhes do Pedido</h2>
+            <div id="modal-content-placeholder"></div>
         </div>
-      </div>
     </div>
     <script>
-
         function obterIdUsuario() {
             fetch('/obter_id_usuario', {
                 method: 'GET',
@@ -132,17 +129,19 @@
                         })
                     });
                 } else {
+                    location.reload();
                     criarNovoComentario(pedidoId)
                 }
             })
             .then(response => response.json())
             .then(result => {
+                comentarioField.value = '';
+                location.reload();
                 // Lidar com a resposta do servidor, se necessário
                 console.log(result);
                 // Atualize a interface do usuário conforme necessário
                 // ...
                 // Limpe o campo de comentário após o envio
-                comentarioField.value = '';
             })
             .catch(error => {
                 // Lidar com erros de solicitação, se necessário
@@ -191,6 +190,7 @@
             })
             .then(response => response.json())
             .then(result => {
+                location.reload();
                 // Lidar com a resposta do servidor, se necessário
                 console.log(result);
                 // Atualize a interface do usuário conforme necessário (por exemplo, atualize a exibição das estrelas)
@@ -239,6 +239,23 @@
             stars.forEach((star, index) => {
                 const reversedIndex = stars.length - index - 1;
                 if (reversedIndex < currentRating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+        }
+        function updateStarsDB(pedidoId,classificacao) {
+            // Seleciona todas as estrelas dentro do pedido específico
+            const stars = document.querySelectorAll(`.rating[data-pedido-id="${pedidoId}"] .star`);
+
+            // Atualiza a classificação no objeto ratings
+            ratings[pedidoId] = classificacao;
+
+            // Atualiza as estrelas com base na nova classificação
+            stars.forEach((star, index) => {
+                const reversedIndex = stars.length - index - 1;
+                if (reversedIndex < classificacao) {
                     star.classList.add('active');
                 } else {
                     star.classList.remove('active');
@@ -370,6 +387,7 @@
                     }
                     // Atualize o texto de classificação para o pedido atual
                     updateRatingTextDB(pedidoId, classificacao)
+                    updateStarsDB(pedidoId,classificacao)
                 }
             });
 
