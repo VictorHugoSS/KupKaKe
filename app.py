@@ -297,9 +297,14 @@ def obter_cupcake(cupcake_id):
 
 @app.route('/limpar-carrinho', methods=['POST'])
 def limpar_carrinho():
-    session.pop('carrinho', None)  # Remove a variável de sessão 'carrinho'
-    flash('Carrinho esvaziado.', 'success')
+    if 'carrinho' in session and session['carrinho']:
+        session.pop('carrinho', None)  # Remove a variável de sessão 'carrinho'
+        flash('Carrinho esvaziado.', 'success')
+    else:
+        flash('O carrinho já está vazio.', 'info')
+
     return redirect('/carrinho')  # Redireciona de volta para a página do carrinho
+
 
 
 @app.route('/adicionar_ao_carrinho', methods=['POST'])
@@ -500,7 +505,7 @@ def admin_add_product():
 
 @app.route('/finalizar_pedido', methods=['POST'])
 def finalizar_pedido():
-    if 'carrinho' in session:
+    if 'carrinho' in session and session['carrinho']:
         carrinho = session['carrinho']
         usuario_id = session.get('usuario_id')
 
@@ -524,6 +529,8 @@ def finalizar_pedido():
 
         session.pop('carrinho', None)  # Limpe o carrinho após a conclusão do pedido
         flash('Pedido realizado com sucesso', 'success')
+    else:
+        flash('O carrinho está vazio. Adicione itens ao carrinho antes de finalizar o pedido.', 'danger')
 
     return redirect(url_for('carrinho'))
 
@@ -680,6 +687,57 @@ def obter_detalhes_pedido():
     return 'Pedido não encontrado', 404
 
 
+import sqlite3
+
+
+def obter_imagem_url_pelo_nome_cupcake(nome_cupcake):
+    try:
+        conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
+        cursor = conn.cursor()
+
+        # Consulta SQL para buscar a imagem_url do cupcake com base no nome do cupcake
+        cursor.execute('SELECT imagem_url FROM cupcakes WHERE nome = ?', (nome_cupcake,))
+
+        # Obter o resultado da consulta
+        resultado = cursor.fetchone()
+
+        if resultado:
+            imagem_url = resultado[0]
+            return imagem_url
+        else:
+            return None
+
+    except sqlite3.Error as e:
+        print('Erro ao buscar imagem_url do cupcake:', str(e))
+        return None
+    finally:
+        conn.close()
+
+
+def obter_imagem_url_pelo_nome_cupcake(nome_cupcake):
+    try:
+        conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
+        cursor = conn.cursor()
+
+        # Consulta SQL para buscar a imagem_url do cupcake com base no nome do cupcake
+        cursor.execute('SELECT imagem_url FROM cupcakes WHERE nome = ?', (nome_cupcake,))
+
+        # Obter o resultado da consulta
+        resultado = cursor.fetchone()
+
+        if resultado:
+            imagem_url = resultado[0]
+            return imagem_url
+        else:
+            return None
+
+    except sqlite3.Error as e:
+        print('Erro ao buscar imagem_url do cupcake:', str(e))
+        return None
+    finally:
+        conn.close()
+
+
 def renderizar_detalhes_pedido(pedido_detalhes):
     # Aqui você pode formatar os detalhes do pedido em HTML
     html = '<h2>Detalhes do Pedido</h2>'
@@ -688,10 +746,26 @@ def renderizar_detalhes_pedido(pedido_detalhes):
     html += f'<p>Endereço: {pedido_detalhes["endereco"]}</p>'
 
     html += '<h3>Itens do Pedido</h3>'
-    html += '<ul>'
+    html += '<table>'
+    html += '<tr><th>Nome do Cupcake</th><th>Descrição</th><th>Preço Unitário</th><th>Quantidade</th><th>Imagem</th></tr>'
     for item in pedido_detalhes['itens']:
-        html += f'<li>Nome: {item["nome"]},Descricao: {item["descricao"]}, Preço Unitário: R$ {item["preco_unitario"]}, Quantidade: {item["quantidade"]}</li>'
-    html += '</ul>'
+        nome_cupcake = item["nome"]
+        imagem_url = obter_imagem_url_pelo_nome_cupcake(nome_cupcake)
+
+        html += '<tr>'
+        html += f'<td>{item["nome"]}</td>'
+        html += f'<td>{item["descricao"]}</td>'
+        html += f'<td>R$ {item["preco_unitario"]}</td>'
+        html += f'<td>{item["quantidade"]}</td>'
+
+        # Adicione a imagem do cupcake se houver uma URL válida
+        if imagem_url:
+            html += f'<td><img src="{imagem_url}" alt="{nome_cupcake}" width="100" height="100"></td>'
+        else:
+            html += '<td></td>'
+
+        html += '</tr>'
+    html += '</table>'
 
     # Você pode adicionar mais informações conforme necessário
 
@@ -749,6 +823,8 @@ def buscar_detalhes_pedido(pedido_id):
         return None
 
 
+import sqlite3
+
 def obter_pedidos_por_usuario(usuario_id):
     try:
         conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
@@ -775,13 +851,23 @@ def obter_pedidos_por_usuario(usuario_id):
         ''', (usuario_id,))
 
         detalhes_pedidos = []
+        pedido_grupo = {}  # Dicionário para agrupar pedidos pelo pedido_id
 
         for row in cursor.fetchall():
-            detalhes_pedido = {
-                'pedido_id': row[0],
-                'usuario_id': row[1],
-                'data_pedido': row[2],
-                'status': row[3],
+            pedido_id = row[0]
+
+            # Se o pedido_id ainda não estiver no dicionário, crie uma entrada para ele
+            if pedido_id not in pedido_grupo:
+                pedido_grupo[pedido_id] = {
+                    'pedido_id': pedido_id,
+                    'usuario_id': row[1],
+                    'data_pedido': row[2],
+                    'status': row[3],
+                    'itens_pedido': []
+                }
+
+            # Detalhes do item do pedido
+            item_pedido = {
                 'item_pedido_id': row[4],
                 'cupcake_id': row[5],
                 'cupcake_nome': row[6],
@@ -790,7 +876,13 @@ def obter_pedidos_por_usuario(usuario_id):
                 'cupcake_imagem_url': row[9],
                 'quantidade': row[10]
             }
-            detalhes_pedidos.append(detalhes_pedido)
+
+            # Adicionar o item do pedido ao grupo do pedido correspondente
+            pedido_grupo[pedido_id]['itens_pedido'].append(item_pedido)
+
+        # Converter o dicionário de grupos de pedidos de volta em uma lista
+        detalhes_pedidos = list(pedido_grupo.values())
+        print("HUGO:", detalhes_pedidos)
 
         conn.commit()
         conn.close()
@@ -844,6 +936,7 @@ def listar_pedidos():
     # Suponha que você tenha uma função chamada 'obter_pedidos_por_usuario' que retorna uma lista de pedidos vinculados ao usuário
 
     pedidos = obter_pedidos_por_usuario(usuario_id)  # Substitua esta linha pela chamada à função apropriada
+    print("Pedidos que vai: ", pedidos)
 
     return render_template('avaliar_item_pedido.html', pedidos=pedidos)
 

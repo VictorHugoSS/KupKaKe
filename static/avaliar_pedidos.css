@@ -312,3 +312,45 @@ input[type="submit"]:hover {
     color: #008000; /* Cor do texto verde */
 }
 
+/* Estilo para a tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #3cda98;
+}
+
+/* Estilo para a imagem do cupcake */
+img {
+    max-width: 100px;
+    height: auto;
+}
+
+/* Estilo para os detalhes do pedido */
+h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
