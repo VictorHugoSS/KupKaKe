@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, redirect, url_for, flash, g, jsonify
+from flask import Flask, render_template, redirect, url_for, flash, g, jsonify
 import sqlite3
 
 from flask_mail import Mail
@@ -89,12 +89,7 @@ def create_db():
     flash('Banco de dados criado com sucesso', 'success')
     return redirect(url_for('login'))
 
-    flash('Banco de dados criado com sucesso', 'success')
-    return redirect(url_for('login'))
-
-
 DATABASE = 'app.db'
-
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -809,7 +804,6 @@ def obter_pedidos_por_usuario(usuario_id):
 @app.route('/obter_pedidos_avaliados', methods=['GET'])
 def obter_pedidos_avaliados():
     usuario_id = session['usuario_id']
-    print("USER = ", usuario_id)
     try:
         # Conecte-se ao banco de dados SQLite (substitua 'app.db' pelo nome do seu banco de dados)
         conn = sqlite3.connect('app.db')
@@ -940,6 +934,7 @@ def obter_usuario_id(pedido_id):
     except sqlite3.Error as e:
         return jsonify({'mensagem': 'Erro no banco de dados'}), 500
 
+
 @app.route('/verificar_avaliacao/<int:pedido_id>', methods=['GET'])
 def verificar_avaliacao(pedido_id):
     try:
@@ -963,6 +958,7 @@ def verificar_avaliacao(pedido_id):
     except sqlite3.Error as e:
         # Lida com erros de banco de dados
         return jsonify({'error': str(e)})
+
 
 @app.route('/atualizar_avaliacao/<int:avaliacao_id>', methods=['PUT'])
 def atualizar_avaliacao(avaliacao_id):
@@ -997,6 +993,7 @@ def atualizar_avaliacao(avaliacao_id):
 
     except sqlite3.Error as e:
         return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
