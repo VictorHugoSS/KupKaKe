@@ -20,7 +20,7 @@
         <h1>Listagem de Pedidos Realizados</h1>
         <ul>
             {% for pedido in pedidos %}
-            <div class="pedido-container">
+            <div class="pedido-container" data-pedido-id="{{ pedido['pedido_id'] }}" >
                 <img src="{{ pedido['cupcake_imagem_url'] }}" alt="Imagem do Cupcake" class="cupcake-img" onclick="mostrarDetalhesPedido('{{ pedido['pedido_id'] }}')">
                 <p>ID do Pedido: {{ pedido['pedido_id'] }}</p>
                 <p>ID do Usuário: {{ pedido['usuario_id'] }}</p>
@@ -32,6 +32,7 @@
                     <li>Quantidade: {{ pedido['quantidade'] }}</li>
                     <li>Preço Unitário: {{ pedido['cupcake_preco'] }}</li>
                 </ul>
+                <span class="status-avaliacao"></span>
                     <!-- Este é o HTML que representa a seção de classificação para um pedido específico -->
                     <div class="rating" data-pedido-id="{{ pedido['pedido_id'] }}">
                         <!-- Estrelas numeradas de 1 a 5, cada uma com um evento onclick para classificar o pedido -->
@@ -45,7 +46,7 @@
                     <p class="rating-text" id="rating-text-{{ pedido['pedido_id'] }}">Avaliação: 0</p>
                     <div class ="container_comm">
                         <form>
-                            <div class="pedido-container" data-pedido-id="{{ pedido['pedido_id'] }}" data-usuario-id="2">
+                            <div class="container_comm" data-pedido-id="{{ pedido['pedido_id'] }}" data-usuario-id="2">
                              <!-- Aqui serão exibidas as avaliações deste pedido -->
                                 <label for="comentario-{{ pedido['pedido_id'] }}">Comentário (máximo 100 caracteres):</label>
                                 <textarea id="comentario-{{ pedido['pedido_id'] }}" name="comentario" maxlength="100" rows="4"></textarea>
@@ -132,23 +133,6 @@
                     });
                 } else {
                     criarNovoComentario(pedidoId)
-                    // Se não existe uma avaliação, você pode adicionar o código para criar uma nova avaliação aqui
-                    // ...
-
-                    // Exemplo de como fazer uma solicitação POST para criar uma nova avaliação (você deve implementar a lógica do servidor):
-                    /*
-                    return fetch('/inserir_avaliacao', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            pedido_id: pedidoId,
-                            classificacao: classificacao,
-                            comentario: comentario
-                        })
-                    });
-                    */
                 }
             })
             .then(response => response.json())
@@ -360,7 +344,7 @@
                 console.log(pedido[0]);
                 const pedidoId = pedido[0];
                 const comentario = pedido[1];
-                const classificacao = pedido[2];
+                let classificacao = pedido[2];
 
                 // Verifique se o campo de comentário existe antes de definir seu valor
                 const comentarioField = document.getElementById(`comentario-${pedidoId}`);
@@ -381,7 +365,9 @@
                             }
                         }
                     }
-
+                    if(classificacao === null){
+                        classificacao = 0;
+                    }
                     // Atualize o texto de classificação para o pedido atual
                     updateRatingTextDB(pedidoId, classificacao)
                 }
@@ -395,10 +381,68 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             // Chame a função para carregar pedidos avaliados quando a página for carregada
+            verificarAvaliacao();
             carregarPedidosAvaliados();
+
 
             // Restante do seu código...
         });
+
+        function verificarAvaliacao() {
+            fetch('/obter_pedidos_avaliados', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Erro ao obter as avaliações.');
+                }
+            })
+            .then(avaliacoes => {
+
+                const pedidosNaPagina = document.querySelectorAll('.pedido-container[data-pedido-id]');
+                const pedidoIds = avaliacoes.map(avaliacao => avaliacao[0]);
+
+                // Iterar sobre os elementos da página
+                pedidosNaPagina.forEach(pedidoContainer => {
+                    const pedidoId = parseInt(pedidoContainer.getAttribute('data-pedido-id')); // Certifique-se de converter para número
+
+                    const avaliado = pedidoIds.includes(pedidoId);
+
+                    // Crie um elemento de status de avaliação para cada pedidoContainer
+                    const statusAvaliacao = document.createElement('span');
+
+                    if (avaliado) {
+                        console.log(`Pedido ID: ${pedidoId}, Avaliado: ${avaliado}`);
+                        statusAvaliacao.textContent = 'Avaliado';
+                        statusAvaliacao.classList.add('avaliado');
+                    } else {
+                        console.log(`Pedido ID: ${pedidoId}, Avaliado: ${avaliado}`);
+                        statusAvaliacao.textContent = 'Não Avaliado';
+                        statusAvaliacao.classList.add('nao-avaliado');
+                    }
+
+                    // Adicione o elemento de status de avaliação ao pedidoContainer
+                    pedidoContainer.appendChild(statusAvaliacao);
+                });
+
+
+                //console.log(pedidoIds)
+                // Suponha que você tenha uma variável "avaliado" que indica se o pedido foi avaliado ou não
+
+
+                // Aqui você pode continuar com qualquer outra lógica que desejar
+                // ...
+            })
+                // Aqui você pode continuar com qualquer outra lógica que desejar
+            .catch(error => {
+                console.error('Erro ao obter as avaliações:', error);
+            });
+        }
 
     </script>
 </body>
