@@ -6,7 +6,6 @@ from flask_mail import Mail
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta'  # Substitua 'sua_chave_secreta' por uma chave segura
 
-
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USERNAME'] = 'seu_email@gmail.com'  # Substitua pelo seu e-mail
@@ -17,9 +16,11 @@ app.config['MAIL_DEFAULT_SENDER'] = 'victorhugodesouzasilva280@gmail.com'  # Sub
 
 mail = Mail(app)
 
+
 # Função para conectar ao banco de dados
 def connect_db():
     return sqlite3.connect('app.db')
+
 
 # Rota para criar o banco de dados (somente uma vez)
 @app.route('/create_db')
@@ -88,11 +89,12 @@ def create_db():
     flash('Banco de dados criado com sucesso', 'success')
     return redirect(url_for('login'))
 
-
     flash('Banco de dados criado com sucesso', 'success')
     return redirect(url_for('login'))
 
+
 DATABASE = 'app.db'
+
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -100,8 +102,10 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
     return db
 
+
 # Rota para o formulário de login
 from flask import request, session
+
 
 # ...
 
@@ -127,11 +131,13 @@ def get_cupcakes_from_database():
             }
             cupcakes.append(cupcake)
 
+        conn.commit()
         conn.close()
     except sqlite3.Error as e:
         print('Erro ao buscar cupcakes do banco de dados:', str(e))
 
     return cupcakes
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -145,15 +151,16 @@ def login():
         cursor.execute('SELECT * FROM usuarios WHERE email = ? AND senha = ?', (email, senha))
         usuario = cursor.fetchone()
 
+        conn.commit()
         conn.close()
 
         if usuario:
             session['usuario_id'] = usuario[0]
-
             # Verifique se o usuário é um administrador
             print("Valor do campo de administrador:", usuario[5])
 
-            if usuario[5] == 1:  # Suponha que o campo que indica se é administrador seja o quarto campo na tabela (índice 3)
+            if usuario[
+                5] == 1:  # Suponha que o campo que indica se é administrador seja o quarto campo na tabela (índice 3)
                 return redirect(url_for('admin_dashboard'))
             else:
                 return redirect(url_for('dashboard'))
@@ -161,6 +168,7 @@ def login():
             flash('Falha ao tentar logar.', 'error')
 
     return render_template('login.html')
+
 
 # Rota para o dashboard (requer login)
 @app.route('/dashboard')
@@ -175,6 +183,7 @@ def dashboard():
         # Buscar os cupcakes do banco de dados (ou de outra fonte)
         cupcakes = get_cupcakes_from_database()
 
+        conn.commit()
         conn.close()
 
         if usuario:
@@ -182,6 +191,7 @@ def dashboard():
 
     flash('Faça o login para acessar o dashboard', 'error')
     return redirect(url_for('login'))
+
 
 @app.route('/admin_dashboard')
 def admin_dashboard():
@@ -192,6 +202,7 @@ def admin_dashboard():
         cursor.execute('SELECT * FROM usuarios WHERE id = ?', (session['usuario_id'],))
         usuario = cursor.fetchone()
 
+        conn.commit()
         conn.close()
         print("cacete")
         if usuario:
@@ -203,7 +214,8 @@ def admin_dashboard():
             else:
                 flash('Você não tem permissão para acessar a página de administração', 'error')
                 print("Entrei pombas")
-                return redirect(url_for('dashboard'))  # Redireciona para o painel normal se o usuário não for administrador
+                return redirect(
+                    url_for('dashboard'))  # Redireciona para o painel normal se o usuário não for administrador
         else:
             flash('Faça o login para acessar a página de administração', 'error')
             print("CAraho")
@@ -212,11 +224,13 @@ def admin_dashboard():
     flash('Faça o login para acessar a página de administração', 'error')
     return redirect(url_for('login'))
 
+
 # Rota para logout
 @app.route('/logout')
 def logout():
     session.pop('usuario_id', None)
     return redirect(url_for('login'))
+
 
 # Rota para o formulário de registro
 @app.route('/register', methods=['GET', 'POST'])
@@ -235,7 +249,8 @@ def register():
         existing_user = cursor.fetchone()
 
         if existing_user:
-            flash('Este email já está associado a uma conta existente. Por favor, faça login ou use outro email.', 'error')
+            flash('Este email já está associado a uma conta existente. Por favor, faça login ou use outro email.',
+                  'error')
         else:
             cursor.execute('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)', (nome, email, senha))
             conn.commit()
@@ -244,6 +259,7 @@ def register():
             return redirect(url_for('login'))
 
     return render_template('register.html')
+
 
 # Função para obter informações do cupcake com base no ID no banco de dados
 def obter_cupcake(cupcake_id):
@@ -266,11 +282,11 @@ def obter_cupcake(cupcake_id):
                 'imagem_url': cupcake_data[5]
             }
 
-            #if cupcake_info:
-                #print("Informações do Cupcake:")
-                #print(cupcake_info)
-            #else:
-                #print("Cupcake não encontrado.")
+            # if cupcake_info:
+            # print("Informações do Cupcake:")
+            # print(cupcake_info)
+            # else:
+            # print("Cupcake não encontrado.")
             return cupcake_info
 
     except sqlite3.Error as e:
@@ -278,6 +294,7 @@ def obter_cupcake(cupcake_id):
         print("Erro ao buscar o cupcake:", e)
     finally:
         # Fechar a conexão com o banco de dados
+        conn.commit()
         conn.close()
 
     return None  # Retornar None se o cupcake não for encontrado
@@ -338,6 +355,7 @@ def adicionar_ao_carrinho():
         # Lidar com exceções aqui, se necessário
         return str(e), 500  # Retorna uma resposta de erro 500 com a descrição do erro como texto
 
+
 @app.route('/remover-do-carrinho/<cupcake_id>', methods=['POST'])
 def remover_do_carrinho(cupcake_id):
     cupcake_int = int(cupcake_id)
@@ -385,10 +403,12 @@ def carrinho():
 
     return render_template('carrinho.html')
 
+
 # Rota para a página inicial
 @app.route('/')
 def home():
     return render_template('login.html')
+
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
@@ -398,7 +418,6 @@ def edit_profile():
             email = request.form['email']
             telefone = request.form['telefone']
             senha = request.form['senha']
-
 
             conn = connect_db()
             cursor = conn.cursor()
@@ -418,6 +437,7 @@ def edit_profile():
         cursor.execute('SELECT * FROM usuarios WHERE id = ?', (session['usuario_id'],))
         usuario = cursor.fetchone()
 
+        conn.commit()
         conn.close()
 
         if usuario:
@@ -425,6 +445,7 @@ def edit_profile():
 
     flash('Faça o login para acessar o perfil', 'error')
     return redirect(url_for('login'))
+
 
 # Rota para gerar relatório de pedidos para atendentes
 @app.route('/generate_report')
@@ -437,6 +458,7 @@ def generate_report():
             cursor.execute('SELECT * FROM pedidos')
             pedidos = cursor.fetchall()
 
+            conn.commit()
             conn.close()
 
             # Você pode implementar a geração do relatório em formato CSV ou PDF aqui
@@ -461,7 +483,7 @@ def admin_add_product():
         conn = connect_db()
         cursor = conn.cursor()
 
-         # Usar uma transação para garantir atomicidade das operações de banco de dados
+        # Usar uma transação para garantir atomicidade das operações de banco de dados
         conn.execute('BEGIN')
 
         cursor.execute('''
@@ -479,6 +501,7 @@ def admin_add_product():
 
     print("Entrei biruta")
     return render_template('admin_add_product.html')
+
 
 @app.route('/finalizar_pedido', methods=['POST'])
 def finalizar_pedido():
@@ -519,6 +542,7 @@ def avaliar_pedido(pedido_id):
 
     # Recupere informações do pedido
 
+
 def obter_item_pedido_por_ids(pedido_id):
     item_pedido = None
 
@@ -527,7 +551,7 @@ def obter_item_pedido_por_ids(pedido_id):
         cursor = conn.cursor()
 
         # Consulta SQL para buscar o item do pedido com base nos IDs do pedido e do cupcake
-        cursor.execute('SELECT * FROM itens_pedido WHERE pedido_id = ? AND cupcake_id = ?', (pedido_id, ))
+        cursor.execute('SELECT * FROM itens_pedido WHERE pedido_id = ? AND cupcake_id = ?', (pedido_id,))
         item_pedido_data = cursor.fetchone()
 
         if item_pedido_data:
@@ -540,29 +564,33 @@ def obter_item_pedido_por_ids(pedido_id):
             }
             print(item_pedido)
 
+        conn.commit()
         conn.close()
     except sqlite3.Error as e:
         print('Erro ao buscar item do pedido do banco de dados:', str(e))
 
     return item_pedido
 
-def salvar_avaliacao_item_pedido(pedido_id, cupcake_id, classificacao, comentario):
+
+def salvar_avaliacao_item_pedido(pedido_id, usuario_id, classificacao, comentario):
     try:
         conn = connect_db()
         cursor = conn.cursor()
 
         # Verifique se já existe uma avaliação para o item do pedido
-        cursor.execute('SELECT * FROM avaliacoes WHERE pedido_id = ? AND cupcake_id = ?', (pedido_id, cupcake_id))
+        cursor.execute('SELECT * FROM avaliacoes WHERE pedido_id = ? AND usuario_id = ?', (pedido_id, usuario_id))
         avaliacao_existente = cursor.fetchone()
 
         if avaliacao_existente:
             # Se a avaliação já existe, atualize-a
-            cursor.execute('UPDATE avaliacoes SET classificacao = ?, comentario = ? WHERE pedido_id = ? AND cupcake_id = ?',
-                           (classificacao, comentario, pedido_id, cupcake_id))
+            cursor.execute(
+                'UPDATE avaliacoes SET classificacao = ?, comentario = ? WHERE pedido_id = ? AND usuario_id = ?',
+                (classificacao, comentario, pedido_id, usuario_id))
         else:
             # Se a avaliação não existe, insira uma nova
-            cursor.execute('INSERT INTO avaliacoes (pedido_id, cupcake_id, classificacao, comentario) VALUES (?, ?, ?, ?)',
-                           (pedido_id, cupcake_id, classificacao, comentario))
+            cursor.execute(
+                'INSERT INTO avaliacoes (pedido_id, usuario_id, classificacao, comentario) VALUES (?, ?, ?, ?)',
+                (pedido_id, usuario_id, classificacao, comentario))
 
         conn.commit()
         conn.close()
@@ -633,12 +661,14 @@ def obter_pedidos_realizados():
             # Adicione o item de pedido à lista de itens do pedido
             pedido['itens'].append(item_pedido)
 
+        conn.commit()
         conn.close()
         return pedidos
     except sqlite3.Error as e:
         print('Erro ao buscar pedidos realizados:', str(e))
 
     return []
+
 
 @app.route('/obter_detalhes_pedido', methods=['GET'])
 def obter_detalhes_pedido():
@@ -653,6 +683,7 @@ def obter_detalhes_pedido():
 
     # Se o pedido não for encontrado, você pode retornar uma mensagem de erro
     return 'Pedido não encontrado', 404
+
 
 def renderizar_detalhes_pedido(pedido_detalhes):
     # Aqui você pode formatar os detalhes do pedido em HTML
@@ -671,7 +702,8 @@ def renderizar_detalhes_pedido(pedido_detalhes):
 
     return html
 
-#Função para buscar detalhes do pedido (exemplo)
+
+# Função para buscar detalhes do pedido (exemplo)
 def buscar_detalhes_pedido(pedido_id):
     try:
         conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
@@ -713,12 +745,14 @@ def buscar_detalhes_pedido(pedido_id):
             }
             detalhes_pedido['itens'].append(detalhes_item)
 
+        conn.commit()
         conn.close()
         return detalhes_pedido
 
     except sqlite3.Error as e:
         print('Erro ao buscar detalhes do pedido:', str(e))
         return None
+
 
 def obter_pedidos_por_usuario(usuario_id):
     try:
@@ -763,12 +797,44 @@ def obter_pedidos_por_usuario(usuario_id):
             }
             detalhes_pedidos.append(detalhes_pedido)
 
+        conn.commit()
         conn.close()
         return detalhes_pedidos
 
     except sqlite3.Error as e:
         print('Erro ao buscar detalhes dos pedidos do usuário:', str(e))
         return None
+
+
+@app.route('/obter_pedidos_avaliados', methods=['GET'])
+def obter_pedidos_avaliados():
+    usuario_id = session['usuario_id']
+    print("USER = ", usuario_id)
+    try:
+        # Conecte-se ao banco de dados SQLite (substitua 'app.db' pelo nome do seu banco de dados)
+        conn = sqlite3.connect('app.db')
+        cursor = conn.cursor()
+
+        # Consulte o banco de dados para obter todos os pedidos do usuário especificado
+        cursor.execute('SELECT pedido_id, comentario, classificacao FROM avaliacoes WHERE usuario_id = ?',
+                       (usuario_id,))
+
+        # Recupere todos os pedidos do usuário
+        pedidos = cursor.fetchall()
+        print(pedidos)
+        # Feche a conexão com o banco de dados
+        conn.commit()
+        conn.close()
+
+        # Converta os resultados em um formato JSON e retorne-os como resposta
+        return jsonify(pedidos)
+
+    except sqlite3.Error as e:
+        return jsonify({'mensagem': 'Erro no banco de dados'}), 500
+
+
+    except sqlite3.Error as e:
+        return jsonify({'mensagem': 'Erro no banco de dados'}), 500
 
 
 @app.route('/listar_pedidos', methods=['GET'])
@@ -786,6 +852,7 @@ def listar_pedidos():
     pedidos = obter_pedidos_por_usuario(usuario_id)  # Substitua esta linha pela chamada à função apropriada
 
     return render_template('avaliar_item_pedido.html', pedidos=pedidos)
+
 
 @app.route('/avaliar_item_pedido/<int:pedido_id>/<int:cupcake_id>', methods=['GET', 'POST'])
 def avaliar_item_pedido(pedido_id, cupcake_id):
@@ -816,6 +883,120 @@ def avaliar_item_pedido(pedido_id, cupcake_id):
 
     return render_template('avaliar_item_pedido.html', item_pedido=item_pedido)
 
+
+@app.route('/inserir_avaliacao', methods=['POST'])
+def inserir_avaliacao():
+    data = request.json
+    print(data)
+    pedido_id = data.get('pedido_id')
+    classificacao = data.get('classificacao')
+    comentario = data.get('comentario')
+    usuario_id = data.get('usuario_id')
+
+    if pedido_id is not None and comentario is not None:
+        conn = sqlite3.connect('app.db')
+        cursor = conn.cursor()
+        cursor.execute('INSERT INTO avaliacoes (pedido_id, classificacao, comentario, usuario_id) VALUES (?, ?, ?,?)',
+                       (pedido_id, classificacao, comentario, usuario_id))
+        conn.commit()
+        conn.close()
+
+        # Responda com um JSON para indicar o sucesso
+        return jsonify({'message': 'Avaliação inserida com sucesso'}), 200
+    else:
+        # Responda com um JSON para indicar um erro
+        return jsonify({'error': 'Dados de avaliação inválidos'}), 400
+
+
+@app.route('/avaliacoes_pedido/<int:pedido_id>/<int:usuario_id>')
+def obter_avaliacoes_pedido(pedido_id, usuario_id):
+    conn = sqlite3.connect('app.db')
+    print("Usuario ID:", usuario_id)
+    cursor = conn.cursor()
+    cursor.execute('SELECT classificacao, comentario FROM avaliacoes WHERE pedido_id = ? AND usuario_id = ?',
+                   (pedido_id, usuario_id,))
+    avaliacoes = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    return jsonify(avaliacoes)
+
+
+@app.route('/obter_usuario_id/<int:pedido_id>', methods=['GET'])
+def obter_usuario_id(pedido_id):
+    try:
+        # Consulte o banco de dados fictício para obter o usuario_id com base no pedido_id
+        conn = sqlite3.connect('app.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT usuario_id FROM pedidos WHERE id = ?', (pedido_id,))
+        usuario_info = cursor.fetchone()
+        print(usuario_info)
+        conn.commit()
+        conn.close()
+
+        if usuario_info:
+            return jsonify({'usuario_id': usuario_info[0]})
+        else:
+            return jsonify({'mensagem': 'Pedido não encontrado'}), 404
+    except sqlite3.Error as e:
+        return jsonify({'mensagem': 'Erro no banco de dados'}), 500
+
+@app.route('/verificar_avaliacao/<int:pedido_id>', methods=['GET'])
+def verificar_avaliacao(pedido_id):
+    try:
+        # Consulta SQL para verificar a avaliação com base no pedido_id
+        conn = sqlite3.connect('app.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT id ,classificacao, comentario FROM avaliacoes WHERE pedido_id = ?', (pedido_id,))
+        resultado = cursor.fetchone()
+
+        conn.commit()
+        conn.close()
+
+        if resultado:
+            # Se houver uma avaliação, retorna a classificação e o comentário
+            id, classificacao, comentario = resultado
+            print(resultado)
+            return jsonify({'avaliacao_id': id, 'classificacao': classificacao, 'comentario': comentario})
+        else:
+            # Se não houver uma avaliação, retorne None (ou um valor apropriado)
+            return jsonify(None)
+    except sqlite3.Error as e:
+        # Lida com erros de banco de dados
+        return jsonify({'error': str(e)})
+
+@app.route('/atualizar_avaliacao/<int:avaliacao_id>', methods=['PUT'])
+def atualizar_avaliacao(avaliacao_id):
+    try:
+        # Verifique se a avaliação com o ID especificado existe
+        conn = sqlite3.connect('app.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM avaliacoes WHERE id = ?', (avaliacao_id,))
+        avaliacao = cursor.fetchone()
+        print(avaliacao)
+
+        if not avaliacao:
+            return jsonify({'error': 'Avaliação não encontrada'}), 404
+
+        # Recupere os novos dados da avaliação do corpo da solicitação
+        novo_classificacao = request.json.get('classificacao')
+        novo_comentario = request.json.get('comentario')
+        print(novo_classificacao)
+        print(novo_comentario)
+
+        # Atualize os dados da avaliação no banco de dados
+        cursor.execute('''
+            UPDATE avaliacoes
+            SET classificacao = ?, comentario = ?
+            WHERE id = ?
+        ''', (novo_classificacao, novo_comentario, avaliacao_id))
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({'message': 'Avaliação atualizada com sucesso'})
+
+    except sqlite3.Error as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

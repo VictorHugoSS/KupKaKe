@@ -8,6 +8,10 @@ body {
 .container {
     margin: 20px;
     padding: 20px;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Padrão */
 }
 
 h1 {
@@ -211,3 +215,76 @@ th {
 .rating input:checked ~ label {
   color: #FFD700; /* Cor das estrelas preenchidas */
 }
+
+/* Estilo base para a estrela */
+.star {
+    width: 30px;
+    height: 30px;
+    background-image: url('https://casaeconstrucao.org/wp-content/uploads/2019/08/molde-de-estrela-9.png'); /* Use sua imagem de estrela ou um ícone de sua escolha */
+    background-size: cover;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Padrão */
+}
+
+/* Estilo para a estrela quando está ativa */
+.star.active {
+    background-image: url('https://www.pngarea.com/pngm/101/1103975_gold-star-png-mario-clipart-gold-star-transparent.png'); /* Use sua imagem de estrela preenchida ou ícone preenchido */
+}
+
+/* Estilo para o formulário */
+form {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para o rótulo */
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* Estilo para o campo de texto (textarea) */
+textarea {
+    width: 100%;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 100px;
+    resize: none;
+    text-align: center; /* Centraliza horizontalmente o texto */
+    padding: 40px 0; /* Aumenta o espaço na parte superior e inferior para centralizar verticalmente */
+}
+
+/* Estilo para o botão de envio */
+input[type="submit"] {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* Estilo para o botão de envio ao passar o mouse */
+input[type="submit"]:hover {
+    background-color: #0056b3;
+}
+/* Estilo para o container que envolve o formulário */
+.container_comm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto; /* Altura total da viewport */
+}
+
