@@ -21,8 +21,8 @@
         <ul>
             {% for pedido in pedidos %}
             <div class="pedido-container" data-pedido-id="{{ pedido['pedido_id'] }}" >
-            <p>URL da Imagem: {{ pedido['cupcake_imagem_url'] }}</p>
-                <img src="https://i.pinimg.com/originals/b5/cf/f8/b5cff8107bb9d58112e5c9c3f4112fa4.jpg" alt="Imagem do Cupcake" class="cupcake-img" onclick="mostrarDetalhesPedido('{{ pedido['pedido_id'] }}')">
+            <p>Detalhes do pedido:</p>
+                <img src="https://i.pinimg.com/originals/b5/cf/f8/b5cff8107bb9d58112e5c9c3f4112fa4.jpg" alt="Imagem do Cupcake" class="cupcake-img clickable" onclick="mostrarDetalhesPedido('{{ pedido['pedido_id'] }}')">
                 <p>ID do Pedido: {{ pedido['pedido_id'] }}</p>
                 <p>ID do Usuário: {{ pedido['usuario_id'] }}</p>
                 <p>Data do Pedido: {{ pedido['data_pedido'] }}</p>
@@ -129,18 +129,19 @@
                         })
                     });
                 } else {
+                    location.reload();
                     criarNovoComentario(pedidoId)
                 }
             })
             .then(response => response.json())
             .then(result => {
+                comentarioField.value = '';
                 location.reload();
                 // Lidar com a resposta do servidor, se necessário
                 console.log(result);
                 // Atualize a interface do usuário conforme necessário
                 // ...
                 // Limpe o campo de comentário após o envio
-                comentarioField.value = '';
             })
             .catch(error => {
                 // Lidar com erros de solicitação, se necessário
@@ -189,6 +190,7 @@
             })
             .then(response => response.json())
             .then(result => {
+                location.reload();
                 // Lidar com a resposta do servidor, se necessário
                 console.log(result);
                 // Atualize a interface do usuário conforme necessário (por exemplo, atualize a exibição das estrelas)

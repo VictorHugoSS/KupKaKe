@@ -1,4 +1,10 @@
-/* Estilos para o cabeçalho */
+/* Reset de estilos para garantir uma base consistente */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .header {
     background-color: rgba(0, 0, 0, 0.5);
     color: #fff;
@@ -13,9 +19,17 @@
     z-index: 1000;
 }
 
+/* Estilos CSS para o conteúdo principal */
+.content {
+    margin-top: 60px; /* A margem superior é igual à altura do cabeçalho */
+    padding: 20px;
+    /* Outros estilos para o conteúdo principal */
+}
+
 .header h1 {
     margin: 0;
     padding-left: 20px;
+    font-size: 1.5rem;
 }
 
 .header-icons {
@@ -28,13 +42,6 @@
     margin-left: 20px;
 }
 
-/* Estilos CSS aqui... */
-body {
-    margin: 0;
-    padding-top: 60px;
-    font-family: Arial, sans-serif;
-}
-
 /* Estilos para a lista de cupcakes */
 .cupcake-list {
     margin-top: 20px;
@@ -42,7 +49,7 @@ body {
 }
 
 .cupcake-list h1 {
-    font-size: 24px;
+    font-size: 1.5rem;
     margin-bottom: 20px;
 }
 
@@ -74,43 +81,47 @@ body {
 
 /* Estilos para a imagem do cupcake */
 .cupcake-image img {
-    max-width: 100%;
-    height: 500px;
+    max-width: 200px; /* Defina a largura máxima desejada */
+    max-height: 200px; /* Defina a altura máxima desejada */
+    width: auto; /* Mantém a proporção da imagem */
+    height: auto; /* Mantém a proporção da imagem */
     border: 1px solid #ccc;
     padding: 5px;
     cursor: pointer;
 }
-
 /* Estilos para o nome do cupcake */
 .cupcake-name {
-    font-size: 20px;
+    font-size: 1.25rem;
     margin: 10px 0;
+    color: #333;
 }
 
 /* Estilos para a descrição do cupcake */
 .cupcake-description {
-    font-size: 16px;
+    font-size: 1rem;
     margin-bottom: 10px;
     color: #666;
 }
 
 /* Estilos para o preço do cupcake */
 .cupcake-price {
-    font-size: 18px;
+    font-size: 1.125rem;
     font-weight: bold;
-    color: #333;
+    color: #ff5733;
 }
 
 /* Estilos para o seletor de quantidade personalizado */
 .quantity-selector {
     margin-top: 10px;
+    display: flex;
+    align-items: center;
 }
 
 .quantity-selector button {
     background-color: #333;
     color: #fff;
     border: none;
-    font-size: 18px;
+    font-size: 1rem;
     cursor: pointer;
     padding: 5px 10px;
     margin: 0 5px;
@@ -118,7 +129,7 @@ body {
 }
 
 .quantity-selector input {
-    font-size: 16px;
+    font-size: 1rem;
     text-align: center;
     width: 40px;
     border: 1px solid #ccc;
@@ -130,7 +141,7 @@ body {
     background-color: #333;
     color: #fff;
     border: none;
-    font-size: 16px;
+    font-size: 1rem;
     cursor: pointer;
     padding: 10px 20px;
     margin-top: 10px;
@@ -142,58 +153,52 @@ body {
     background-color: #555;
 }
 
-/* Estilos para o seletor de quantidade personalizado */
-.quantity-selector {
-    margin-top: 10px;
-}
-
-.quantity-selector button {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 5px 10px;
-    margin: 0 5px;
-    border-radius: 3px;
-}
-
-.quantity-selector input {
-    font-size: 16px;
-    text-align: center;
-    width: 40px;
-    border: 1px solid #ccc;
-    padding: 5px;
-}
-
 /* Estilos para o modal */
 .modal {
     display: none; /* Oculta o modal inicialmente */
     position: fixed;
-    top: 50%; /* Posiciona o topo do modal no centro vertical */
-    left: 50%; /* Posiciona o lado esquerdo do modal no centro horizontal */
-    transform: translate(-50%, -50%); /* Centraliza o modal */
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7); /* Cor de fundo escura */
     z-index: 2000; /* Defina um valor de z-index maior para o modal */
+    text-align: center; /* Centraliza o conteúdo horizontalmente */
+    overflow: auto; /* Adiciona rolagem se a imagem for maior que o modal */
 }
 
-.modal-conteudo {
-    display: block;
+/* Estilos para a imagem dentro do modal */
+.modal-img {
     max-width: 90%;
     max-height: 90%;
-    position: relative; /* Para posicionar o botão de fechamento */
-    margin: 0 auto;
-    margin-top: 50px;
+    margin: 20px auto; /* Centraliza vertical e horizontalmente */
+    display: block;
 }
 
 .fechar-modal {
     position: absolute;
     top: 10px;
     right: 10px;
-    font-size: 36px;
+    font-size: 1.5rem;
     cursor: pointer;
     color: #fff;
     z-index: 3000; /* Defina um valor de z-index ainda maior para o botão de fechamento */
+}
+
+.cupcake-item.unavailable {
+    opacity: 0.5; /* Reduz a opacidade para indicar indisponibilidade */
+    cursor: not-allowed; /* Altera o cursor para "não permitido" para indicar que está indisponível */
+    position: relative;
+}
+
+.cupcake-item.unavailable:hover::before {
+    content: "Cupcake indisponível"; /* Exibe o texto "Cupcake indisponível" ao passar o mouse sobre o cupcake indisponível */
+    display: block;
+    position: absolute;
+    background: white;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 1;
+    top: -30px; /* Ajuste a posição vertical do texto conforme necessário */
 }

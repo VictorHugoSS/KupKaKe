@@ -68,5 +68,23 @@
     .nav-links {
         display: none; /* Oculta o menu */
     }
+    table.detalhes-pedido {
+        font-size: 12px;
+    }
+
+    /* Oculte a imagem do cupcake em telas menores */
+    table.detalhes-pedido td img {
+        display: none;
+    }
+
+    /* Estilos para a lista de itens em telas menores */
+    ul.itens-pedido {
+        list-style: none;
+        padding: 0;
+    }
+    ul.itens-pedido li {
+        margin-bottom: 10px;
+    }
 }
+
 

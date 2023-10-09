@@ -354,3 +354,99 @@ h3 {
     margin-top: 20px;
     margin-bottom: 10px;
 }
+.clickable {
+    cursor: pointer;
+    transition: border 0.3s ease-in-out; /* Adiciona uma transição suave para a borda */
+}
+
+/* Adicione esse estilo para destacar a borda quando o mouse passar sobre a imagem */
+.clickable:hover {
+    border: 2px solid #007bff; /* Altere a cor da borda conforme desejado */
+}
+
+/* Estilos para a tabela de detalhes do pedido */
+table.detalhes-pedido {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.detalhes-pedido th,
+table.detalhes-pedido td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+/* Adicione estilos específicos para telas menores (por exemplo, telas com largura máxima de 600px) */
+@media (max-width: 600px) {
+    table.detalhes-pedido th,
+    table.detalhes-pedido td {
+        padding: 5px; /* Reduza o espaço entre as células */
+    }
+
+    /* Ajuste a largura da tabela para caber na tela */
+    table.detalhes-pedido {
+        width: 100%;
+    }
+}
+
+    /* Estilo para o contêiner de detalhes do pedido */
+    .pedido-details {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        margin: 20px 0;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Estilo para o título "Detalhes do Pedido" */
+    .pedido-title {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    /* Estilo para as informações do pedido (ID, Cliente, Endereço) */
+    .pedido-info p {
+        font-size: 16px;
+        margin: 5px 0;
+    }
+
+     /* Estilo para a tabela de itens */
+    .itens-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        background-color: #f2f2f2; /* Cor de fundo da tabela */
+        border: 1px solid #ddd; /* Cor da borda da tabela */
+    }
+
+    .itens-table th, .itens-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+
+    .itens-table th {
+        background-color: #4CAF50; /* Cor de fundo do cabeçalho da tabela (verde) */
+        color: white; /* Cor do texto do cabeçalho (branco) */
+    }
+
+    .itens-table tr:nth-child(even) {
+        background-color: #f5f5f5; /* Cor de fundo das linhas pares (cinza claro) */
+    }
+
+    .itens-table tr:nth-child(odd) {
+        background-color: #ffffff; /* Cor de fundo das linhas ímpares (branco) */
+    }
+
+    .itens-table tr:hover {
+        background-color: #e0e0e0; /* Cor de fundo das linhas quando o mouse passa por cima (cinza) */
+    }
+    /* Estilo para a imagem do cupcake */
+    .cupcake-image img {
+        max-width: 100px;
+        max-height: 100px;
+        border-radius: 5px;
+    }

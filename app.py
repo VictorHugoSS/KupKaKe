@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, g, jsonify
+from flask import Flask, render_template, redirect, url_for, flash, g, jsonify, abort
 import sqlite3
 
 from flask_mail import Mail
@@ -234,26 +234,57 @@ def register():
         nome = request.form['nome']
         email = request.form['email']
         senha = request.form['senha']
+        confirmar_senha = request.form['confirmar_senha']  # Adicione a confirmação de senha
         telefone = request.form['telefone']
 
-        conn = connect_db()
-        cursor = conn.cursor()
-
-        # Verifique se o email já está em uso
-        cursor.execute('SELECT * FROM usuarios WHERE email = ?', (email,))
-        existing_user = cursor.fetchone()
-
-        if existing_user:
-            flash('Este email já está associado a uma conta existente. Por favor, faça login ou use outro email.',
-                  'error')
+        # Verifique se a senha e a confirmação de senha correspondem
+        if senha != confirmar_senha:
+            flash('A senha e a confirmação de senha não correspondem. Por favor, tente novamente.', 'error')
         else:
-            cursor.execute('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)', (nome, email, senha))
-            conn.commit()
-            conn.close()
-            flash('Usuário registrado com sucesso', 'success')
-            return redirect(url_for('login'))
+            conn = connect_db()
+            cursor = conn.cursor()
+
+            # Verifique se o email já está em uso
+            cursor.execute('SELECT * FROM usuarios WHERE email = ?', (email,))
+            existing_user = cursor.fetchone()
+
+            if existing_user:
+                flash('Este email já está associado a uma conta existente. Por favor, faça login ou use outro email.',
+                      'error')
+            else:
+                cursor.execute('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)', (nome, email, senha))
+                conn.commit()
+                conn.close()
+                flash('Usuário registrado com sucesso', 'success')
+                return redirect(url_for('login'))
 
     return render_template('register.html')
+
+
+from flask import render_template, request
+
+def is_admin():
+    # Verifique se a variável de sessão "admin" está definida como True
+    return session.get('admin', False)
+
+@app.route('/admin_list_producto', methods=['GET'])
+def list_cupcakes():
+    # Estabeleça uma conexão com o banco de dados
+    conn = sqlite3.connect('app.db')
+    cursor = conn.cursor()
+
+    # Execute uma consulta SQL para listar todos os cupcakes
+    cursor.execute('SELECT * FROM cupcakes')
+
+    # Recupere todos os cupcakes do banco de dados
+    cupcakes = cursor.fetchall()
+
+    # Feche a conexão com o banco de dados
+    conn.close()
+
+    # Renderize um template HTML para exibir os cupcakes
+    print("cupcakies: ", cupcakes)
+    return render_template('admin_list_product.html', cupcakes=cupcakes)
 
 
 # Função para obter informações do cupcake com base no ID no banco de dados
@@ -739,37 +770,49 @@ def obter_imagem_url_pelo_nome_cupcake(nome_cupcake):
 
 
 def renderizar_detalhes_pedido(pedido_detalhes):
-    # Aqui você pode formatar os detalhes do pedido em HTML
-    html = '<h2>Detalhes do Pedido</h2>'
-    html += f'<p>ID do Pedido: {pedido_detalhes["id"]}</p>'
-    html += f'<p>Cliente: {pedido_detalhes["cliente"]}</p>'
-    html += f'<p>Endereço: {pedido_detalhes["endereco"]}</p>'
-
-    html += '<h3>Itens do Pedido</h3>'
-    html += '<table>'
-    html += '<tr><th>Nome do Cupcake</th><th>Descrição</th><th>Preço Unitário</th><th>Quantidade</th><th>Imagem</th></tr>'
+    # Use f-strings para formatação de string
+    html = f'''
+        <div class="pedido-details">
+            <h2 class="pedido-title">Detalhes do Pedido</h2>
+            <div class="pedido-info">
+                <p>ID do Pedido: {pedido_detalhes["id"]}</p>
+                <p>Cliente: {pedido_detalhes["cliente"]}</p>
+                <p>Endereço: {pedido_detalhes["endereco"]}</p>
+            </div>
+            <h3 class="itens-title">Itens do Pedido</h3>
+            <table class="itens-table">
+                <thead>
+                    <tr>
+                        <th>Nome do Cupcake</th>
+                        <th>Descrição</th>
+                        <th>Preço Unitário</th>
+                        <th>Quantidade</th>
+                        <th>Imagem</th>
+                    </tr>
+                </thead>
+                <tbody>
+    '''
+    # Use um loop for mais limpo e legível
     for item in pedido_detalhes['itens']:
         nome_cupcake = item["nome"]
         imagem_url = obter_imagem_url_pelo_nome_cupcake(nome_cupcake)
 
-        html += '<tr>'
-        html += f'<td>{item["nome"]}</td>'
-        html += f'<td>{item["descricao"]}</td>'
-        html += f'<td>R$ {item["preco_unitario"]}</td>'
-        html += f'<td>{item["quantidade"]}</td>'
+        html += f'''
+            <tr>
+                <td>{item["nome"]}</td>
+                <td>{item["descricao"]}</td>
+                <td>R$ {item["preco_unitario"]}</td>
+                <td>{item["quantidade"]}</td>
+                <td><img src="{imagem_url}" alt="{nome_cupcake}" class="cupcake-image"></td>
+            </tr>
+        '''
 
-        # Adicione a imagem do cupcake se houver uma URL válida
-        if imagem_url:
-            html += f'<td><img src="{imagem_url}" alt="{nome_cupcake}" width="100" height="100"></td>'
-        else:
-            html += '<td></td>'
-
-        html += '</tr>'
-    html += '</table>'
-
+    html += '</tbody></table>'
     # Você pode adicionar mais informações conforme necessário
-
+    html += '</div>'
     return html
+
+
 
 
 # Função para buscar detalhes do pedido (exemplo)
