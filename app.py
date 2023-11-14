@@ -1,21 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, flash, g, jsonify, abort
+from flask import Flask, redirect, url_for, flash, g, jsonify, render_template, request, session
 import sqlite3
-
+from datetime import datetime
 from flask_mail import Mail
 
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta'  # Substitua 'sua_chave_secreta' por uma chave segura
-
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USERNAME'] = 'seu_email@gmail.com'  # Substitua pelo seu e-mail
-app.config['MAIL_PASSWORD'] = 'sua_senha'  # Substitua pela sua senha
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_DEFAULT_SENDER'] = 'victorhugodesouzasilva280@gmail.com'  # Substitua pelo seu e-mail
-
-mail = Mail(app)
-
 
 # Função para conectar ao banco de dados
 def connect_db():
@@ -89,20 +78,15 @@ def create_db():
     flash('Banco de dados criado com sucesso', 'success')
     return redirect(url_for('login'))
 
+
 DATABASE = 'app.db'
+
 
 def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
     return db
-
-
-# Rota para o formulário de login
-from flask import request, session
-
-
-# ...
 
 def get_cupcakes_from_database():
     cupcakes = []
@@ -154,8 +138,7 @@ def login():
             # Verifique se o usuário é um administrador
             print("Valor do campo de administrador:", usuario[5])
 
-            if usuario[
-                5] == 1:  # Suponha que o campo que indica se é administrador seja o quarto campo na tabela (índice 3)
+            if usuario[5] == 1:
                 return redirect(url_for('admin_dashboard'))
             else:
                 return redirect(url_for('dashboard'))
@@ -202,8 +185,7 @@ def admin_dashboard():
         print("cacete")
         if usuario:
             # Verificar se o usuário é um administrador
-            if usuario[5] == 1:  # Suponha que o campo que indica se é administrador seja o quarto campo na tabela (índice 3)
-                # Lógica para a página de administração aqui
+            if usuario[5] == 1:
                 print("La vamos nos")
                 return render_template('admin_dashboard.html')
             else:
@@ -233,6 +215,7 @@ def register():
     if request.method == 'POST':
         nome = request.form['nome']
         email = request.form['email']
+        endereco = request.form['endereco']
         senha = request.form['senha']
         confirmar_senha = request.form['confirmar_senha']  # Adicione a confirmação de senha
         telefone = request.form['telefone']
@@ -252,7 +235,7 @@ def register():
                 flash('Este email já está associado a uma conta existente. Por favor, faça login ou use outro email.',
                       'error')
             else:
-                cursor.execute('INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)', (nome, email, senha))
+                cursor.execute('INSERT INTO usuarios (nome, endereco, email, senha) VALUES (?, ?, ?, ?)', (nome, endereco, email, senha))
                 conn.commit()
                 conn.close()
                 flash('Usuário registrado com sucesso', 'success')
@@ -261,11 +244,10 @@ def register():
     return render_template('register.html')
 
 
-from flask import render_template, request
-
 def is_admin():
     # Verifique se a variável de sessão "admin" está definida como True
     return session.get('admin', False)
+
 
 @app.route('/admin_list_producto', methods=['GET'])
 def list_cupcakes():
@@ -290,7 +272,7 @@ def list_cupcakes():
 # Função para obter informações do cupcake com base no ID no banco de dados
 def obter_cupcake(cupcake_id):
     try:
-        # Conectar ao banco de dados SQLite (substitua 'nome_do_banco.db' pelo nome do seu banco de dados)
+        # Conectar ao banco de dados SQLite
         conn = sqlite3.connect('app.db')
         cursor = conn.cursor()
 
@@ -308,11 +290,6 @@ def obter_cupcake(cupcake_id):
                 'imagem_url': cupcake_data[5]
             }
 
-            # if cupcake_info:
-            # print("Informações do Cupcake:")
-            # print(cupcake_info)
-            # else:
-            # print("Cupcake não encontrado.")
             return cupcake_info
 
     except sqlite3.Error as e:
@@ -337,7 +314,6 @@ def limpar_carrinho():
     return redirect('/carrinho')  # Redireciona de volta para a página do carrinho
 
 
-
 @app.route('/adicionar_ao_carrinho', methods=['POST'])
 def adicionar_ao_carrinho():
     try:
@@ -349,8 +325,6 @@ def adicionar_ao_carrinho():
         cupcake_id = request.form.get('cupcake_id')
         quantidade = request.form.get('quantidade', type=int)
 
-        # Você deve buscar as informações do cupcake com base no cupcake_id no seu banco de dados.
-        # Suponha que você tenha uma função chamada obter_informacoes_do_cupcake.
         cupcake_info = obter_cupcake(cupcake_id)
 
         if cupcake_info:
@@ -446,7 +420,7 @@ def edit_profile():
     if 'usuario_id' in session:
         if request.method == 'POST':
             nome = request.form['nome']
-            email = request.form['email']
+            endereco = request.form['endereco']
             telefone = request.form['telefone']
             senha = request.form['senha']
 
@@ -454,8 +428,8 @@ def edit_profile():
             cursor = conn.cursor()
 
             # Atualizar as informações do perfil no banco de dados
-            cursor.execute('UPDATE usuarios SET nome=?, email=?, telefone=?, senha=? WHERE id=?',
-                           (nome, email, telefone, senha, session['usuario_id']))
+            cursor.execute('UPDATE usuarios SET nome=?, endereco=?, telefone=?, senha=? WHERE id=?',
+                           (nome, endereco, telefone, senha, session['usuario_id']))
             conn.commit()
             conn.close()
 
@@ -475,28 +449,6 @@ def edit_profile():
             return render_template('edit_profile.html', usuario=usuario)
 
     flash('Faça o login para acessar o perfil', 'error')
-    return redirect(url_for('login'))
-
-
-# Rota para gerar relatório de pedidos para atendentes
-@app.route('/generate_report')
-def generate_report():
-    if 'usuario_id' in session:
-        if session['tipo_usuario'] == 'atendente':
-            conn = connect_db()
-            cursor = conn.cursor()
-
-            cursor.execute('SELECT * FROM pedidos')
-            pedidos = cursor.fetchall()
-
-            conn.commit()
-            conn.close()
-
-            # Você pode implementar a geração do relatório em formato CSV ou PDF aqui
-
-            return render_template('generate_report.html', pedidos=pedidos)
-
-    flash('Faça o login como atendente para gerar relatórios', 'error')
     return redirect(url_for('login'))
 
 
@@ -539,18 +491,18 @@ def finalizar_pedido():
     if 'carrinho' in session and session['carrinho']:
         carrinho = session['carrinho']
         usuario_id = session.get('usuario_id')
+        data_pedido = datetime.now().strftime('%H:%M')
 
         conn = connect_db()
         cursor = conn.cursor()
 
         # Crie um registro de pedido no banco de dados
-        cursor.execute('INSERT INTO pedidos (usuario_id, status) VALUES (?, ?)', (usuario_id, 'Concluído'))
+        cursor.execute('INSERT INTO pedidos (usuario_id, data_pedido, status) VALUES (?, ?, ?)', (usuario_id, data_pedido, 'Concluído'))
         pedido_id = cursor.lastrowid
 
         for item in carrinho:
             cupcake_id = item['cupcake']['id']
             quantidade = item['quantidade']
-
             # Crie um registro de item de pedido no banco de dados
             cursor.execute('INSERT INTO itens_pedido (pedido_id, cupcake_id, quantidade) VALUES (?, ?, ?)',
                            (pedido_id, cupcake_id, quantidade))
@@ -718,33 +670,6 @@ def obter_detalhes_pedido():
     return 'Pedido não encontrado', 404
 
 
-import sqlite3
-
-
-def obter_imagem_url_pelo_nome_cupcake(nome_cupcake):
-    try:
-        conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
-        cursor = conn.cursor()
-
-        # Consulta SQL para buscar a imagem_url do cupcake com base no nome do cupcake
-        cursor.execute('SELECT imagem_url FROM cupcakes WHERE nome = ?', (nome_cupcake,))
-
-        # Obter o resultado da consulta
-        resultado = cursor.fetchone()
-
-        if resultado:
-            imagem_url = resultado[0]
-            return imagem_url
-        else:
-            return None
-
-    except sqlite3.Error as e:
-        print('Erro ao buscar imagem_url do cupcake:', str(e))
-        return None
-    finally:
-        conn.close()
-
-
 def obter_imagem_url_pelo_nome_cupcake(nome_cupcake):
     try:
         conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
@@ -808,17 +733,14 @@ def renderizar_detalhes_pedido(pedido_detalhes):
         '''
 
     html += '</tbody></table>'
-    # Você pode adicionar mais informações conforme necessário
     html += '</div>'
     return html
 
 
-
-
-# Função para buscar detalhes do pedido (exemplo)
+# Função para buscar detalhes do pedido
 def buscar_detalhes_pedido(pedido_id):
     try:
-        conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
+        conn = sqlite3.connect('app.db')
         cursor = conn.cursor()
 
         # Consulta SQL para buscar detalhes do pedido com base no pedido_id
@@ -866,11 +788,9 @@ def buscar_detalhes_pedido(pedido_id):
         return None
 
 
-import sqlite3
-
 def obter_pedidos_por_usuario(usuario_id):
     try:
-        conn = sqlite3.connect('app.db')  # Substitua pelo nome do seu banco de dados
+        conn = sqlite3.connect('app.db')
         cursor = conn.cursor()
 
         # Consulta SQL para buscar detalhes dos pedidos do usuário com base no usuario_id
@@ -899,7 +819,7 @@ def obter_pedidos_por_usuario(usuario_id):
         for row in cursor.fetchall():
             pedido_id = row[0]
 
-            # Se o pedido_id ainda não estiver no dicionário, crie uma entrada para ele
+            # Se o pedido_id ainda não estiver no dicionário, cria uma entrada para ele
             if pedido_id not in pedido_grupo:
                 pedido_grupo[pedido_id] = {
                     'pedido_id': pedido_id,
@@ -940,7 +860,7 @@ def obter_pedidos_por_usuario(usuario_id):
 def obter_pedidos_avaliados():
     usuario_id = session['usuario_id']
     try:
-        # Conecte-se ao banco de dados SQLite (substitua 'app.db' pelo nome do seu banco de dados)
+        # Conecta ao banco de dados SQLite
         conn = sqlite3.connect('app.db')
         cursor = conn.cursor()
 
@@ -948,19 +868,15 @@ def obter_pedidos_avaliados():
         cursor.execute('SELECT pedido_id, comentario, classificacao FROM avaliacoes WHERE usuario_id = ?',
                        (usuario_id,))
 
-        # Recupere todos os pedidos do usuário
+        # Recupera todos os pedidos do usuário
         pedidos = cursor.fetchall()
         print(pedidos)
         # Feche a conexão com o banco de dados
         conn.commit()
         conn.close()
 
-        # Converta os resultados em um formato JSON e retorne-os como resposta
+        # Converta os resultados em um formato JSON e retorna como resposta
         return jsonify(pedidos)
-
-    except sqlite3.Error as e:
-        return jsonify({'mensagem': 'Erro no banco de dados'}), 500
-
 
     except sqlite3.Error as e:
         return jsonify({'mensagem': 'Erro no banco de dados'}), 500
@@ -968,17 +884,14 @@ def obter_pedidos_avaliados():
 
 @app.route('/listar_pedidos', methods=['GET'])
 def listar_pedidos():
-    # Recupere o 'usuario_id' do usuário logado da sessão (você pode ter um sistema de autenticação para definir isso)
+    # Recupere o 'usuario_id' do usuário logado da sessão
     usuario_id = session.get('usuario_id')
 
     if usuario_id is None:
-        # O usuário não está autenticado, você pode redirecioná-lo para uma página de login
-        return redirect('/login')  # Substitua '/login' pela rota real da página de login
 
-    # Aqui, você deve recuperar os pedidos do banco de dados que estão vinculados ao 'usuario_id'
-    # Suponha que você tenha uma função chamada 'obter_pedidos_por_usuario' que retorna uma lista de pedidos vinculados ao usuário
+        return redirect('/login')
 
-    pedidos = obter_pedidos_por_usuario(usuario_id)  # Substitua esta linha pela chamada à função apropriada
+    pedidos = obter_pedidos_por_usuario(usuario_id)
     print("Pedidos que vai: ", pedidos)
 
     return render_template('avaliar_item_pedido.html', pedidos=pedidos)
@@ -986,12 +899,12 @@ def listar_pedidos():
 
 @app.route('/avaliar_item_pedido/<int:pedido_id>/<int:cupcake_id>', methods=['GET', 'POST'])
 def avaliar_item_pedido(pedido_id, cupcake_id):
-    # Verifique se o usuário está autenticado
+    # Verifica se o usuário está autenticado
     if 'usuario_id' not in session:
         flash('Faça o login para avaliar itens do pedido.', 'error')
         return redirect(url_for('login'))
 
-    # Recupere informações do item do pedido
+    # Recupera informações do item do pedido
     item_pedido = obter_item_pedido_por_ids(pedido_id, cupcake_id)
 
     # Verifique se o item do pedido existe e pertence ao usuário logado
@@ -1003,9 +916,7 @@ def avaliar_item_pedido(pedido_id, cupcake_id):
         classificacao = int(request.form.get('classificacao'))
         comentario = request.form.get('comentario')
 
-        # Valide os dados do formulário aqui
-
-        # Salve a avaliação do item do pedido no banco de dados (supondo que você tenha uma função para fazer isso)
+        # Salva a avaliação do item do pedido no banco de dados
         salvar_avaliacao_item_pedido(pedido_id, cupcake_id, classificacao, comentario)
 
         flash('Item do pedido avaliado com sucesso.', 'success')
@@ -1054,7 +965,7 @@ def obter_avaliacoes_pedido(pedido_id, usuario_id):
 @app.route('/obter_usuario_id/<int:pedido_id>', methods=['GET'])
 def obter_usuario_id(pedido_id):
     try:
-        # Consulte o banco de dados fictício para obter o usuario_id com base no pedido_id
+        # Consulte o banco de dados para obter o usuario_id com base no pedido_id
         conn = sqlite3.connect('app.db')
         cursor = conn.cursor()
         cursor.execute('SELECT usuario_id FROM pedidos WHERE id = ?', (pedido_id,))

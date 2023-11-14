@@ -25,8 +25,8 @@
             <label for="nome">Nome:</label>
             <input type="text" id="nome" name="nome" class="form-field" required value="{{ usuario.nome }}">
 
-            <label for="email">Email:</label>
-            <input type="text" id="email" name="email" class="form-field" required value="{{ usuario.email }}">
+            <label for="endereco">Endereço:</label>
+            <input type="text" id="endereco" name="endereco" class="form-field" required value="{{ usuario.endereco }}">
 
             <label for="telefone">Telefone:</label>
             <input type="text" id="telefone" name="telefone" class="form-field" value="{{ usuario.telefone }}">
@@ -35,9 +35,11 @@
             <input type="password" id="senha" name="senha" class="form-field" required>
 
             <button type="submit" class="register-button">Salvar Alterações</button>
+
+            <a href="/dashboard" class="action-button">Voltar</a>
         </form>
 
-        <a href="/dashboard" class="action-button">Voltar para o Dashboard</a>
+
         <!-- JavaScript para ocultar a mensagem de sucesso após 5 segundos -->
         <script>
             setTimeout(function() {

@@ -19,6 +19,14 @@
         </a>
         <h1>Listagem de Pedidos Realizados</h1>
         <ul>
+            {% if not pedidos %}
+                <div class="no-pedidos-message">
+                <p>Não há pedidos: </p>
+                <!-- Link "Peça já o seu cupcake" -->
+                <a href="/dashboard" class="pedir-cupcake-link">Peça já o seu cupcake</a>
+            </div>
+
+            {% endif %}
             {% for pedido in pedidos %}
             <div class="pedido-container" data-pedido-id="{{ pedido['pedido_id'] }}" >
             <p>Detalhes do pedido:</p>

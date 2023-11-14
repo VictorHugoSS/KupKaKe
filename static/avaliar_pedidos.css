@@ -450,3 +450,44 @@ table.detalhes-pedido td {
         max-height: 100px;
         border-radius: 5px;
     }
+
+    .no-pedidos-message {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    .no-pedidos-message p {
+        font-size: 32px;
+        font-weight: bold;
+        color: #000000;
+        background-color: rgba(0, 0, 0, 0);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+/* Estilos CSS */
+.pedir-cupcake-link {
+    display: inline-block;
+    text-align: center;
+    margin-top: 20px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #000000;
+    background-color: rgba(0, 0, 0, 0);
+    padding: 15px 25px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.pedir-cupcake-link:hover {
+    background-color: rgb(0, 255, 0);
+    transform: scale(1.05);
+}
+
+/* Estilo para quando o link é clicado */
+.pedir-cupcake-link:active {
+    background-color: rgba(0, 0, 0, 0);
+}

@@ -99,40 +99,38 @@
         <div class="cupcake-list">
             <!-- Modal pop-up para a imagem grande -->
             <div id="imagemModal" class="modal">
-              <span class="fechar-modal" onclick="fecharModal()">&times;</span>
-              <img class="modal-conteudo" id="imagemModalHD">
+                <span class="fechar-modal" onclick="fecharModal()">&times;</span>
+                <img class="modal-conteudo" id="imagemModalHD">
             </div>
             <h1>Cupcakes Disponíveis</h1>
-        <ul class="cupcake-items">
-            {% for cupcake in cupcakes %}
-                {% if cupcake['disponivel'] %}
-                    <li class="cupcake-item">
-                        <div class="cupcake-image">
-                            <img src="{{ cupcake['imagem_url'] }}" alt="{{ cupcake['nome'] }}" onclick="abrirModal('{{ cupcake['imagem_url'] }}')">
-                        </div>
-                        <div class="cupcake-info">
-                            <h2 class="cupcake-name">{{ cupcake['nome'] }}</h2>
-                            <p class="cupcake-description">{{ cupcake['descricao'] }}</p>
-                            <p class="cupcake-price">Preço: R$ {{ cupcake['preco'] }}</p>
-
-                            <!-- Seletor de quantidade personalizado -->
-                            <div class="quantity-selector">
-                                <button onclick="decrementQuantity('quantidade-{{ cupcake['id'] }}')">-</button>
-                                <input type="number" id="quantidade-{{ cupcake['id'] }}" class="quantidade" min="1" value="1">
-                                <button onclick="incrementQuantity('quantidade-{{ cupcake['id'] }}')">+</button>
+            <ul class="cupcake-items">
+                {% for cupcake in cupcakes %}
+                    {% if cupcake['disponivel'] %}
+                        <li class="cupcake-item">
+                            <div class="cupcake-image">
+                                <img src="{{ cupcake['imagem_url'] }}" alt="{{ cupcake['nome'] }}" onclick="abrirModal('{{ cupcake['imagem_url'] }}')">
                             </div>
-                            <!-- Formulário para adicionar ao carrinho -->
-                            <form method="POST" action="/adicionar_ao_carrinho">
-                                <input type="hidden" name="cupcake_id" step="1" value="{{ cupcake['id'] }}">
-                                <input type="hidden" name="quantidade" id="quantidade-hidden-{{ cupcake['id'] }}" value="1"> <!-- Campo oculto para a quantidade -->
-                                <button type="submit" class="buy-button">Adicionar ao carrinho</button>
-                            </form>
-                        </div>
-                    </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-
+                            <div class="cupcake-info">
+                                <h2 class="cupcake-name">{{ cupcake['nome'] }}</h2>
+                                <p class="cupcake-description">{{ cupcake['descricao'] }}</p>
+                                <p class="cupcake-price">Preço: R$ {{ cupcake['preco'] }}</p>
+                                <!-- Seletor de quantidade personalizado -->
+                                <div class="quantity-selector">
+                                    <button onclick="decrementQuantity('quantidade-{{ cupcake['id'] }}')">-</button>
+                                    <input type="number" id="quantidade-{{ cupcake['id'] }}" class="quantidade" min="1" value="1">
+                                    <button onclick="incrementQuantity('quantidade-{{ cupcake['id'] }}')">+</button>
+                                </div>
+                                <!-- Formulário para adicionar ao carrinho -->
+                                <form method="POST" action="/adicionar_ao_carrinho">
+                                    <input type="hidden" name="cupcake_id" step="1" value="{{ cupcake['id'] }}">
+                                    <input type="hidden" name="quantidade" id="quantidade-hidden-{{ cupcake['id'] }}" value="1"> <!-- Campo oculto para a quantidade -->
+                                    <button type="submit" class="buy-button">Adicionar ao carrinho</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
             <h1>Cupcakes Indisponíveis</h1>
             <ul class="cupcake-items">
                 {% for cupcake in cupcakes %}
