@@ -1,10 +1,16 @@
 from flask import Flask, redirect, url_for, flash, g, jsonify, render_template, request, session
-import sqlite3
+import sqlite3, pytz
 from datetime import datetime
 from flask_mail import Mail
 
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta'  # Substitua 'sua_chave_secreta' por uma chave segura
+
+# Definindo o fuso horário para o Brasil (Brasília)
+fuso_horario_brasil = pytz.timezone('America/Sao_Paulo')
+
+# Obtendo a data e hora atual no fuso horário do Brasil
+data_e_hora_brasil = datetime.now(fuso_horario_brasil)
 
 # Função para conectar ao banco de dados
 def connect_db():
@@ -491,7 +497,8 @@ def finalizar_pedido():
     if 'carrinho' in session and session['carrinho']:
         carrinho = session['carrinho']
         usuario_id = session.get('usuario_id')
-        data_pedido = datetime.now().strftime('%H:%M')
+        # Formatando a data e hora para exibir apenas hora e minutos
+        data_pedido = data_e_hora_brasil.strftime('%H:%M')
 
         conn = connect_db()
         cursor = conn.cursor()
