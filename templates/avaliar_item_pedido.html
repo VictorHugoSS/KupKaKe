@@ -31,8 +31,8 @@
             <div class="pedido-container" data-pedido-id="{{ pedido['pedido_id'] }}" >
             <p>Detalhes do pedido:</p>
                 <img src="https://i.pinimg.com/originals/b5/cf/f8/b5cff8107bb9d58112e5c9c3f4112fa4.jpg" alt="Imagem do Cupcake" class="cupcake-img clickable" onclick="mostrarDetalhesPedido('{{ pedido['pedido_id'] }}')">
-                <p>ID do Pedido: {{ pedido['pedido_id'] }}</p>
-                <p>ID do Usuário: {{ pedido['usuario_id'] }}</p>
+                <!--<p>ID do Pedido: {{ pedido['pedido_id'] }}</p>
+                <p>ID do Usuário: {{ pedido['usuario_id'] }}</p>!-->
                 <p>Data do Pedido: {{ pedido['data_pedido'] }}</p>
                 <p>Status: {{ pedido['status'] }}</p>
                 <ul id="itens-{{ pedido['pedido_id'] }}" class="itens-pedido">

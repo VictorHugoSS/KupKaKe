@@ -701,8 +701,7 @@ def renderizar_detalhes_pedido(pedido_detalhes):
             <h2 class="pedido-title">Detalhes do Pedido</h2>
             <div class="pedido-info">
                 <p>ID do Pedido: {pedido_detalhes["id"]}</p>
-                <p>Cliente: {pedido_detalhes["cliente"]}</p>
-                <p>Endereço: {pedido_detalhes["endereco"]}</p>
+                <p>Cliente: {pedido_detalhes["cliente"]}</p> 
             </div>
             <h3 class="itens-title">Itens do Pedido</h3>
             <table class="itens-table">
@@ -769,7 +768,7 @@ def buscar_detalhes_pedido(pedido_id):
 
         for row in cursor.fetchall():
             detalhes_pedido['id'] = row[0]
-            detalhes_pedido['cliente'] = row[4]
+            detalhes_pedido['cliente'] = row[1]
             detalhes_pedido['endereco'] = row[5]
             detalhes_item = {
                 'nome': row[6],
