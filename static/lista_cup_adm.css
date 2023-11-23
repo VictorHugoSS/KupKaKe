@@ -1,91 +1,92 @@
-/* Estilos para o container */
+/* Estilos gerais */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
+    background-color: #f5f5f5;
     margin: 0;
     padding: 0;
 }
 
 .container {
     max-width: 800px;
-    margin: 0 auto;
+    margin: 20px auto;
     padding: 20px;
     background-color: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    border: 1px solid #e0e0e0;
-    transition: box-shadow 0.3s ease;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
 }
 
-.container:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-/* Estilos para o título */
 h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
     text-align: center;
     color: #333;
-    font-size: 36px;
-    margin-bottom: 20px;
 }
 
-/* Estilos para a lista de cupcakes */
-ul {
-    list-style-type: none;
+.cupcake-list {
+    list-style: none;
     padding: 0;
 }
 
-li {
-    background-color: #fff;
-    margin: 20px 0;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-li:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-strong {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 10px;
-    display: block;
-}
-
-p {
-    font-size: 18px;
-    color: #777;
-    margin: 10px 0;
-}
-
-.price {
-    font-size: 20px;
-    color: #333;
-    display: block;
-    margin-top: 10px;
-}
-
-.availability {
-    font-size: 20px;
-    color: #333;
-    display: block;
-    margin-top: 10px;
-}
-
-/* Estilos para a imagem do cupcake */
-.img-container {
+.cupcake-item {
+    margin-bottom: 30px;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
-    margin-top: 20px;
 }
 
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    width: 300px; /* Tamanho ajustado para imagens maiores */
+.cupcake-image-container {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+.cupcake-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.cupcake-details {
+    text-align: center;
+}
+
+.cupcake-details p {
+    margin: 5px 0;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Estilos para o link "Editar" */
+a.edit-link {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+    border: 2px solid transparent;
+    background-color: #ff6b6b; /* Cor mais moderna */
+    display: inline-block;
+    margin-top: 10px;
+}
+
+a.edit-link:hover {
+    background-color: #ff4d4d; /* Mudança de cor no hover */
+    margin-top: 12px;
+}
+

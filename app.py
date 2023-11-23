@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, flash, g, jsonify, render_template, request, session
 import sqlite3, pytz
 from datetime import datetime
-from flask_mail import Mail
+
 
 app = Flask(__name__)
 app.secret_key = 'sua_chave_secreta'  # Substitua 'sua_chave_secreta' por uma chave segura
@@ -153,6 +153,60 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/atualizar_cupcake/<int:cupcake_id>', methods=['POST'])
+def atualizar_cupcake(cupcake_id):
+    try:
+        # Recuperar os dados enviados pelo formulário
+        novo_nome = request.form['nome']
+        nova_descricao = request.form['descricao']
+        novo_preco = request.form['preco']
+        disponivel = 'disponivel' in request.form  # Verifica se o checkbox foi marcado
+
+        # Estabelecer uma conexão com o banco de dados
+        conn = sqlite3.connect('app.db')
+        cursor = conn.cursor()
+
+        # Executar uma consulta SQL para atualizar os dados do cupcake com base no cupcake_id
+        cursor.execute('''
+            UPDATE cupcakes
+            SET nome = ?, descricao = ?, preco = ?, disponivel = ?
+            WHERE id = ?
+        ''', (novo_nome, nova_descricao, novo_preco, disponivel, cupcake_id))
+
+        # Commit (confirmar) as alterações e fechar a conexão com o banco de dados
+        conn.commit()
+        conn.close()
+
+        # Redirecionar de volta para a página de listagem de cupcakes após a atualização
+        session['mensagem'] = 'Cupcake atualizado com sucesso!'
+        return redirect('/admin_dashboard')
+
+    except Exception as e:
+        session['mensagem'] = f'Erro ao atualizar o cupcake: {str(e)}'
+        return redirect('/admin_dashboard')
+
+
+@app.route('/admin_edit_product/<int:cupcake_id>', methods=['GET'])
+def admin_edit_product(cupcake_id):
+    print("Aí esta", cupcake_id)
+    # Estabeleça uma conexão com o banco de dados
+    conn = sqlite3.connect('app.db')
+    cursor = conn.cursor()
+
+    # Execute uma consulta SQL para recuperar os detalhes do cupcake com o cupcake_id fornecido
+    cursor.execute('SELECT * FROM cupcakes WHERE id = ?', (cupcake_id,))
+    cupcake = cursor.fetchone()
+
+    # Feche a conexão com o banco de dados
+    conn.close()
+
+    # Verifique se o cupcake foi encontrado com o ID fornecido
+    if cupcake:
+        # Renderize a página de edição admin_edit_product.html, passando os detalhes do cupcake
+        return render_template('admin_edit_product.html', cupcake=cupcake)
+    else:
+        # Se o cupcake com o ID fornecido não for encontrado, redirecione para outra página ou manipule conforme necessário
+        return "Cupcake não encontrado"
 
 # Rota para o dashboard (requer login)
 @app.route('/dashboard')

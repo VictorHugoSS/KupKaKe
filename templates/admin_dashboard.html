@@ -11,25 +11,36 @@
 </head>
 <body>
     <div class="admin-dashboard">
-        <div class="admin-header">
-            <h1>Painel de Administração</h1>
+        <div class="admin-content">
             <a href="/logout" class="logout-button" title="Sair">
                 <i class="fa fa-sign-out-alt"></i> Sair
             </a>
+            <!-- Conteúdo do painel de administração -->
+            <h3>Bem-vindo ao Painel de Administração!</h3>
+            <p>Aqui você pode gerenciar produtos.</p>
         </div>
         <div class="admin-menu">
             <h2>Gerenciar Produtos</h2>
             <ul>
                 <li><a href="/admin/add_product">Adicionar Produto</a></li>
                 <li><a href="/admin_list_producto">Editar Produto</a></li>
-                <li><a href="/admin/delete_product">Excluir Produto</a></li>
             </ul>
         </div>
-        <div class="admin-content">
-            <!-- Conteúdo do painel de administração -->
-            <h3>Bem-vindo ao Painel de Administração!</h3>
-            <p>Aqui você pode gerenciar produtos, usuários e muito mais.</p>
-        </div>
     </div>
+    {% if 'mensagem' in session %}
+        <div class="mensagem {% if session['mensagem'] == 'Cupcake atualizado com sucesso!' %} mensagem-sucesso {% else %} mensagem-erro {% endif %}">
+            {{ session['mensagem'] }}
+        </div>
+        {% set _ = session.pop('mensagem', None) %}
+    {% endif %}
 </body>
+<script>
+    // Seleciona a mensagem e a esconde após um intervalo de tempo
+    var mensagemElement = document.querySelector('.mensagem');
+    if (mensagemElement) {
+        setTimeout(function() {
+            mensagemElement.style.display = 'none';
+        }, 3000); // Esconde após 3 segundos (3000 milissegundos)
+    }
+</script>
 </html>

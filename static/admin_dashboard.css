@@ -84,3 +84,40 @@ body {
     font-size: 18px;
     color: #777;
 }
+/* Estilo para a mensagem */
+.mensagem {
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Estilo para a mensagem de sucesso */
+.mensagem-sucesso {
+    background-color: #4CAF50;
+}
+
+/* Estilo para a mensagem de erro */
+.mensagem-erro {
+    background-color: #f44336;
+}
+
+.logout-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000; /* Garante que o botão esteja acima de outros elementos */
+    background-color: #333;
+    color: #fff;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.logout-text {
+    margin-right: 5px;
+}

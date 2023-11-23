@@ -148,8 +148,6 @@
                 // Lidar com a resposta do servidor, se necessário
                 console.log(result);
                 // Atualize a interface do usuário conforme necessário
-                // ...
-                // Limpe o campo de comentário após o envio
             })
             .catch(error => {
                 // Lidar com erros de solicitação, se necessário
@@ -199,10 +197,8 @@
             .then(response => response.json())
             .then(result => {
                 location.reload();
-                // Lidar com a resposta do servidor, se necessário
                 console.log(result);
-                // Atualize a interface do usuário conforme necessário (por exemplo, atualize a exibição das estrelas)
-                // ...
+                // Atualize a interface do usuário conforme necessário
                 // Limpe o campo de comentário após o envio
                 comentarioField.value = '';
             })
@@ -409,9 +405,6 @@
             // Chame a função para carregar pedidos avaliados quando a página for carregada
             verificarAvaliacao();
             carregarPedidosAvaliados();
-
-
-            // Restante do seu código...
         });
 
         function verificarAvaliacao() {
@@ -456,15 +449,7 @@
                     pedidoContainer.appendChild(statusAvaliacao);
                 });
 
-
-                //console.log(pedidoIds)
-                // Suponha que você tenha uma variável "avaliado" que indica se o pedido foi avaliado ou não
-
-
-                // Aqui você pode continuar com qualquer outra lógica que desejar
-                // ...
             })
-                // Aqui você pode continuar com qualquer outra lógica que desejar
             .catch(error => {
                 console.error('Erro ao obter as avaliações:', error);
             });
